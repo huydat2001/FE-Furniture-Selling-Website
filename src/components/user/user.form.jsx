@@ -141,6 +141,7 @@ const UserFormComponent = (props) => {
         onOk={() => {
           userForm.submit();
         }}
+        okText="Tạo"
         onCancel={resetAndCloseModal}
         maskClosable={false}
       >

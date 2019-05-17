@@ -1,6 +1,7 @@
 import { React, useEffect, useState } from "react";
 import { Button, Menu } from "antd";
 import {
+  CommentOutlined,
   ControlOutlined,
   HomeOutlined,
   MenuFoldOutlined,
@@ -9,9 +10,8 @@ import {
 import { BsFillMenuAppFill } from "react-icons/bs";
 import { IoAnalytics } from "react-icons/io5";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaProductHunt, FaUser } from "react-icons/fa";
+import { FaCommentDots, FaProductHunt, FaUser } from "react-icons/fa";
 import { BiSolidCategory, BiSolidDiscount } from "react-icons/bi";
-import { CiDiscount1 } from "react-icons/ci";
 import { TbBrandBebo } from "react-icons/tb";
 import { MdPayments } from "react-icons/md";
 const Navbar = (props) => {
@@ -31,13 +31,11 @@ const Navbar = (props) => {
         "brands",
         "products",
         "orders",
+        "comments",
       ];
 
-      // Trích xuất phần cuối của pathname (sau "/admin/")
-      const pathSegments = location.pathname.split("/").filter(Boolean); // Tách thành mảng và bỏ phần tử rỗng
-      const lastSegment = pathSegments[pathSegments.length - 1]; // Lấy phần cuối (users, apps, v.v.)
-
-      // Kiểm tra xem lastSegment có nằm trong allRoutes không
+      const pathSegments = location.pathname.split("/").filter(Boolean);
+      const lastSegment = pathSegments[pathSegments.length - 1];
       const currentRoute = allRoutes.find((item) => item === lastSegment);
 
       if (currentRoute) {
@@ -58,6 +56,9 @@ const Navbar = (props) => {
           setOpenKeys(["management"]);
         }
         if (currentRoute === "orders") {
+          setOpenKeys(["management"]);
+        }
+        if (currentRoute === "comments") {
           setOpenKeys(["management"]);
         }
         if (currentRoute === "apps") {
@@ -127,6 +128,11 @@ const Navbar = (props) => {
           label: <Link to="/admin/orders">Giao dịch</Link>,
           key: "orders",
           icon: <MdPayments />,
+        },
+        {
+          label: <Link to="/admin/comments">Bình luận</Link>,
+          key: "comments",
+          icon: <FaCommentDots />,
         },
       ],
     },

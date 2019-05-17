@@ -21,6 +21,7 @@ import VNPayReturnPage from "./components/checkout/vnpay.returnpage.jsx";
 import OrderPage from "./pages/admin/order.jsx";
 import HistoryOrderPage from "./pages/user/history.order.jsx";
 import AnalyticPage from "./pages/admin/analytic.jsx";
+import CommentPage from "./pages/admin/comment.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -91,6 +92,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <OrderPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "comments",
+        element: (
+          <PrivateRoute>
+            <CommentPage />
           </PrivateRoute>
         ),
       },

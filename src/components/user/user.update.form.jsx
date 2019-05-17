@@ -128,6 +128,7 @@ const UserUpDateFormComponent = (props) => {
         onOk={() => {
           updateForm.submit();
         }}
+        okText="Sửa"
         onCancel={() => {
           setIsModalUpdateOpen(false);
         }}
