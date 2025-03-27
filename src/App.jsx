@@ -6,12 +6,10 @@ import Sider from "antd/es/layout/Sider";
 import { Content, Footer, Header } from "antd/es/layout/layout";
 import HeaderLayout from "./components/layout/header";
 import { useState } from "react";
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+
 function App() {
   const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
+
   return (
     <>
       <Layout style={{ minHeight: "100vh" }}>
@@ -19,7 +17,7 @@ function App() {
           <Navbar setCollapsed={setCollapsed} collapsed={collapsed} />
         </Sider>
         <Layout>
-          <Header style={{ padding: 0, background: colorBgContainer }}>
+          <Header className="bg-slate-50 p-0 flex items-center justify-between">
             <HeaderLayout setCollapsed={setCollapsed} collapsed={collapsed} />
           </Header>
           <Content style={{ margin: "16px" }}>

@@ -73,26 +73,17 @@ const Navbar = (props) => {
       ],
     },
   ];
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed); // Chỉ thay đổi collapsed khi nhấp nút
-  };
+
   return (
     <>
-      <div style={{ width: "100%" }}>
-        <Button
-          type="primary"
-          onClick={toggleCollapsed}
-          style={{ marginBottom: 16, width: "100%" }}
-        >
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </Button>
+      <div>
         <Menu
-          selectedKeys={[current]}
-          openKeys={openKeys}
-          onOpenChange={onOpenChange}
-          mode="inline"
           theme="light"
-          inlineCollapsed={collapsed}
+          mode="inline"
+          selectedKeys={[current]}
+          // openKeys={openKeys}
+          // onOpenChange={onOpenChange}
+          // inlineCollapsed={collapsed}
           items={items}
         />
       </div>
