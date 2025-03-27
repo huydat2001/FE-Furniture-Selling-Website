@@ -85,6 +85,7 @@ const Navbar = (props) => {
           // onOpenChange={onOpenChange}
           // inlineCollapsed={collapsed}
           items={items}
+          className="h-full text-sm md:text-base"
         />
       </div>
     </>

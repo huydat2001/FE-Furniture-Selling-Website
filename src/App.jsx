@@ -12,18 +12,32 @@ function App() {
 
   return (
     <>
-      <Layout style={{ minHeight: "100vh" }}>
-        <Sider width={250} collapsible collapsed={collapsed} trigger={null}>
-          <Navbar setCollapsed={setCollapsed} collapsed={collapsed} />
+      <Layout className="min-h-screen">
+        <Sider
+          width={250}
+          collapsible
+          collapsed={collapsed}
+          trigger={null}
+          className={`hidden md:block ${
+            collapsed ? "w-20" : "w-64"
+          } transition-all duration-300`}
+        >
+          <Navbar
+            className={"pt-100"}
+            setCollapsed={setCollapsed}
+            collapsed={collapsed}
+          />
         </Sider>
         <Layout>
-          <Header className="bg-slate-50 p-0 flex items-center justify-between">
+          <Header
+            className={`bg-slate-50 p-0 flex items-center justify-between transition-all duration-300`}
+          >
             <HeaderLayout setCollapsed={setCollapsed} collapsed={collapsed} />
           </Header>
-          <Content style={{ margin: "16px" }}>
+          <Content className="m-4 md:m-6">
             <Outlet />
           </Content>
-          <Footer style={{ textAlign: "center" }}>
+          <Footer className="text-center p-4">
             <FooterLayout />
           </Footer>
         </Layout>
