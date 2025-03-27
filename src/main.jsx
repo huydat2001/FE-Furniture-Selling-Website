@@ -8,6 +8,8 @@ import { AuthWrapper } from "./contexts/auth.context.jsx";
 import HomePage from "./pages/homePage.jsx";
 import Analytic from "./pages/analytic.jsx";
 import AppPage from "./pages/appds.jsx";
+import "./index.css";
+
 const router = createBrowserRouter([
   {
     path: "/",

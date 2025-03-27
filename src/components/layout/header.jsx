@@ -1,104 +1,85 @@
-import { React, useEffect, useState } from "react";
-import { Button, Menu } from "antd";
 import {
-  ControlOutlined,
-  HomeOutlined,
+  AppstoreOutlined,
+  MailOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
-import { BsFillMenuAppFill } from "react-icons/bs";
-import { IoAnalytics } from "react-icons/io5";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaUser } from "react-icons/fa";
-const Header = () => {
-  const [current, setCurrent] = useState("");
-  const [openKeys, setOpenKeys] = useState([]);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
-  useEffect(() => {
-    if (location && location.pathname) {
-      const allRoutes = ["users", "apps"];
-      const currentRoute = allRoutes.find(
-        (item) => `/${item}` === location.pathname
-      );
-      console.log("currentRoute :>> ", currentRoute);
-      if (currentRoute) {
-        setCurrent(currentRoute);
-        if (currentRoute === "users") {
-          setOpenKeys(["management"]);
-        }
-        if (currentRoute === "apps") {
-          setOpenKeys(["overview"]);
-        }
-      } else {
-        setCurrent("analytics");
-        setOpenKeys(["overview"]);
-      }
-    }
-  }, [location]);
-
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
+import { Button, Menu } from "antd";
+import { useState } from "react";
+import "tailwindcss";
+const HeaderLayout = (props) => {
+  const [current, setCurrent] = useState("mail");
+  const onClick = (e) => {
+    console.log("click ", e);
+    setCurrent(e.key);
   };
-  const onOpenChange = (keys) => {
-    setOpenKeys(keys);
-  };
-  console.log("current :>> ", current);
-  console.log("open :>> ", openKeys);
+  const { collapsed, setCollapsed } = props;
   const items = [
     {
-      icon: <HomeOutlined />,
-      label: "OVERVIEW",
-      key: "overview",
+      label: "Navigation One",
+      key: "mail",
+      icon: <MailOutlined />,
+    },
+    {
+      label: "Navigation Two",
+      key: "app",
+      icon: <AppstoreOutlined />,
+      disabled: true,
+    },
+    {
+      label: "Navigation Three - Submenu",
+      key: "SubMenu",
+      icon: <SettingOutlined />,
       children: [
         {
-          label: <Link to="/">Analytics</Link>,
-          key: "analytics",
-          icon: <IoAnalytics />,
+          type: "group",
+          label: "Item 1",
+          children: [
+            { label: "Option 1", key: "setting:1" },
+            { label: "Option 2", key: "setting:2" },
+          ],
         },
         {
-          label: <Link to="/apps">App</Link>,
-          key: "apps",
-          icon: <BsFillMenuAppFill />,
+          type: "group",
+          label: "Item 2",
+          children: [
+            { label: "Option 3", key: "setting:3" },
+            { label: "Option 4", key: "setting:4" },
+          ],
         },
       ],
     },
     {
-      icon: <ControlOutlined />,
-      label: "MANAGEMENT",
-      key: "management",
-      children: [
-        {
-          label: <Link to="/users">User</Link>,
-          key: "users",
-          icon: <FaUser />,
-        },
-      ],
+      key: "alipay",
+      label: (
+        <a href="https://ant.design" target="_blank" rel="noopener noreferrer">
+          Navigation Four - Link
+        </a>
+      ),
     },
   ];
-
   return (
     <>
-      <div style={{ width: 256 }}>
+      <div className="flex">
         <Button
-          type="primary"
-          onClick={toggleCollapsed}
-          style={{ marginBottom: 16 }}
-        >
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </Button>
+          type="text"
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          onClick={() => setCollapsed(!collapsed)}
+          style={{
+            fontSize: "16px",
+            width: 64,
+            height: 64,
+          }}
+        />
         <Menu
+          onClick={onClick}
           selectedKeys={[current]}
-          openKeys={openKeys}
-          onOpenChange={onOpenChange}
-          mode="inline"
-          theme="light"
-          inlineCollapsed={collapsed}
+          mode="horizontal"
           items={items}
         />
       </div>
     </>
   );
 };
-export default Header;
+export default HeaderLayout;
