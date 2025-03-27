@@ -1,48 +1,78 @@
-import React, { useState } from "react";
+import { React, useEffect, useState } from "react";
+import { Button, Menu } from "antd";
 import {
-  AppstoreOutlined,
-  ContainerOutlined,
-  DesktopOutlined,
-  MailOutlined,
+  ControlOutlined,
+  HomeOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  PieChartOutlined,
 } from "@ant-design/icons";
-import { Button, Menu } from "antd";
+import { BsFillMenuAppFill } from "react-icons/bs";
+import { IoAnalytics } from "react-icons/io5";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaUser } from "react-icons/fa";
 const Header = () => {
+  const [current, setCurrent] = useState("");
+  const [openKeys, setOpenKeys] = useState([]);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  useEffect(() => {
+    if (location && location.pathname) {
+      const allRoutes = ["users", "apps"];
+      const currentRoute = allRoutes.find(
+        (item) => `/${item}` === location.pathname
+      );
+      console.log("currentRoute :>> ", currentRoute);
+      if (currentRoute) {
+        setCurrent(currentRoute);
+        if (currentRoute === "users") {
+          setOpenKeys(["management"]);
+        }
+        if (currentRoute === "apps") {
+          setOpenKeys(["overview"]);
+        }
+      } else {
+        setCurrent("analytics");
+        setOpenKeys(["overview"]);
+      }
+    }
+  }, [location]);
+
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   };
+  const onOpenChange = (keys) => {
+    setOpenKeys(keys);
+  };
+  console.log("current :>> ", current);
+  console.log("open :>> ", openKeys);
   const items = [
-    { key: "1", icon: <PieChartOutlined />, label: "Option 1" },
-    { key: "2", icon: <DesktopOutlined />, label: "Option 2" },
-    { key: "3", icon: <ContainerOutlined />, label: "Option 3" },
     {
-      key: "sub1",
-      label: "Navigation One",
-      icon: <MailOutlined />,
+      icon: <HomeOutlined />,
+      label: "OVERVIEW",
+      key: "overview",
       children: [
-        { key: "5", label: "Option 5" },
-        { key: "6", label: "Option 6" },
-        { key: "7", label: "Option 7" },
-        { key: "8", label: "Option 8" },
+        {
+          label: <Link to="/">Analytics</Link>,
+          key: "analytics",
+          icon: <IoAnalytics />,
+        },
+        {
+          label: <Link to="/apps">App</Link>,
+          key: "apps",
+          icon: <BsFillMenuAppFill />,
+        },
       ],
     },
     {
-      key: "sub2",
-      label: "Navigation Two",
-      icon: <AppstoreOutlined />,
+      icon: <ControlOutlined />,
+      label: "MANAGEMENT",
+      key: "management",
       children: [
-        { key: "9", label: "Option 9" },
-        { key: "10", label: "Option 10" },
         {
-          key: "sub3",
-          label: "Submenu",
-          children: [
-            { key: "11", label: "Option 11" },
-            { key: "12", label: "Option 12" },
-          ],
+          label: <Link to="/users">User</Link>,
+          key: "users",
+          icon: <FaUser />,
         },
       ],
     },
@@ -59,10 +89,11 @@ const Header = () => {
           {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </Button>
         <Menu
-          defaultSelectedKeys={["1"]}
-          defaultOpenKeys={["sub1"]}
+          selectedKeys={[current]}
+          openKeys={openKeys}
+          onOpenChange={onOpenChange}
           mode="inline"
-          theme="dark"
+          theme="light"
           inlineCollapsed={collapsed}
           items={items}
         />
