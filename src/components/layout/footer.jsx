@@ -1,4 +1,4 @@
 const FooterLayout = () => {
-  return <>hello footer</>;
+  return <>Design by Nguyễn Huy Đạt</>;
 };
 export default FooterLayout;

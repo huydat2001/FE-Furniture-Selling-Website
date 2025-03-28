@@ -1,17 +1,16 @@
 import { Popconfirm, Space, Table } from "antd";
-import { getAllUserAPI } from "../../services/api.service.user";
-import { useEffect, useState } from "react";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
-const UserTableComponent = () => {
-  const [dataUser, setDataUser] = useState([]);
-  const [current, setCurrent] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    fetchUser();
-  }, [current, pageSize]);
+const UserTableComponent = (props) => {
+  const {
+    dataUser,
+    current,
+    setCurrent,
+    pageSize,
+    setPageSize,
+    total,
+    loading,
+  } = props;
   const columns = [
     {
       title: "STT",
@@ -98,14 +97,7 @@ const UserTableComponent = () => {
     setCurrent(pagination.current);
     setPageSize(pagination.pageSize);
   };
-  const fetchUser = async () => {
-    const res = await getAllUserAPI(current, pageSize);
-    if (res.data) {
-      setDataUser(res.data.result);
-      setTotal(res.data.pagination.total_users);
-      setLoading(false);
-    }
-  };
+
   return (
     <>
       <Table
@@ -123,6 +115,7 @@ const UserTableComponent = () => {
           pageSize: pageSize,
           showSizeChanger: true,
           total: total,
+          pageSizeOptions: ["5", "10", "20", "30"],
           showTotal: (total, range) => {
             return (
               <div>
