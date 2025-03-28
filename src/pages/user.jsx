@@ -1,6 +1,7 @@
 import { Breadcrumb } from "antd";
 import { Link } from "react-router-dom";
 import UserTableComponent from "../components/user/user.table";
+import UserFormComponent from "../components/user/user.form";
 
 const UserPage = () => {
   return (
@@ -17,6 +18,7 @@ const UserPage = () => {
           },
         ]}
       />
+      <UserFormComponent />
       <UserTableComponent />
     </>
   );
