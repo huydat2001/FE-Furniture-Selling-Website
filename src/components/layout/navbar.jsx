@@ -22,7 +22,6 @@ const Navbar = (props) => {
       const currentRoute = allRoutes.find(
         (item) => `/${item}` === location.pathname
       );
-      console.log("currentRoute :>> ", currentRoute);
       if (currentRoute) {
         setCurrent(currentRoute);
         if (currentRoute === "users") {
@@ -78,14 +77,14 @@ const Navbar = (props) => {
     <>
       <div>
         <Menu
-          theme="light"
+          theme="dark"
           mode="inline"
           selectedKeys={[current]}
           // openKeys={openKeys}
           // onOpenChange={onOpenChange}
           // inlineCollapsed={collapsed}
           items={items}
-          className="h-full text-sm md:text-base"
+          className="min-h-screen text-sm md:text-base"
         />
       </div>
     </>

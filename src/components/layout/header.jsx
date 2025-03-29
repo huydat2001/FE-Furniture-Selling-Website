@@ -9,7 +9,14 @@ import { Avatar, Button, Tooltip } from "antd";
 
 import { useState } from "react";
 const HeaderLayout = (props) => {
-  const { collapsed, setCollapsed } = props;
+  const {
+    collapsed,
+    setCollapsed,
+    isMobile,
+    setUserToggled,
+    isSiderVisible,
+    setIsSiderVisible,
+  } = props;
   const getPageInfo = () => {
     switch (location.pathname) {
       case "/users":
@@ -21,13 +28,39 @@ const HeaderLayout = (props) => {
     }
   };
   const { title, breadcrumb } = getPageInfo();
+  const handleToggle = () => {
+    if (isMobile) {
+      // Trên mobile: Toggle hiển thị/ẩn Sider
+      setIsSiderVisible(!isSiderVisible);
+      // Nếu Sider đang ẩn, mở rộng nó khi hiển thị
+      if (!isSiderVisible) {
+        setCollapsed(false);
+      }
+    } else {
+      // Trên md trở lên: Toggle thu gọn/mở rộng Sider
+      setCollapsed(!collapsed);
+    }
+    setUserToggled(true); // Đánh dấu người dùng đã toggle thủ công
+  };
   return (
     <>
       <div className="flex items-center justify-between w-full">
         <Button
           type="text"
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={() => setCollapsed(!collapsed)}
+          icon={
+            isMobile ? (
+              isSiderVisible ? (
+                <MenuFoldOutlined />
+              ) : (
+                <MenuUnfoldOutlined />
+              )
+            ) : collapsed ? (
+              <MenuUnfoldOutlined />
+            ) : (
+              <MenuFoldOutlined />
+            )
+          }
+          onClick={handleToggle}
           className="text-xl md:text-2xl"
         />
         {/* <div className="flex-1 px-4">

@@ -4,8 +4,8 @@ const getAllUserAPI = (current, pageSize) => {
   return axios.get(URL_BACKEND);
 };
 const createUserAPI = (value) => {
-  console.log("value :>> ", value);
   const URL_BACKEND = "/v1/api/user";
+
   const data = {
     username: value.username,
     email: value.email,
@@ -13,10 +13,28 @@ const createUserAPI = (value) => {
     fullName: value.fullName,
     role: value.role,
     phone: value.phone,
-    city: value.address[0],
-    state: value.address[1],
-    street: value.address[2],
+    city: value.address?.[0] ?? undefined,
+    state: value.address?.[1] ?? undefined,
+    street: value.address?.[2] ?? undefined,
   };
   return axios.post(URL_BACKEND, data);
 };
-export { getAllUserAPI, createUserAPI };
+const updateUserAPI = (value) => {
+  const URL_BACKEND = "/v1/api/user";
+  const data = {
+    id: value.id,
+    password: value.password,
+    fullName: value.fullName,
+    role: value.role,
+    phone: value.phone,
+    city: value.address?.[0] ?? undefined,
+    state: value.address?.[1] ?? undefined,
+    street: value.address?.[2] ?? undefined,
+  };
+  return axios.put(URL_BACKEND, data);
+};
+const deleteUserAPI = (id) => {
+  const URL_BACKEND = `/v1/api/user/${id}`;
+  return axios.delete(URL_BACKEND);
+};
+export { getAllUserAPI, createUserAPI, updateUserAPI, deleteUserAPI };

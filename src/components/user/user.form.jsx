@@ -20,7 +20,7 @@ const UserFormComponent = (props) => {
   const [residenceLabels, setResidenceLabels] = useState([]);
   const [options, setOptions] = useState([]);
   const [userForm] = Form.useForm();
-  const { fetchUser } = props;
+  const { fetchUser, dataUpdate, isModalUpdateOpen } = props;
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
@@ -126,6 +126,7 @@ const UserFormComponent = (props) => {
       });
     }
   };
+
   return (
     <>
       <Button
@@ -156,7 +157,6 @@ const UserFormComponent = (props) => {
           style={{ maxWidth: 700 }}
           onFinish={handleSubmitBtn}
           onFinishFailed={onFinishFailed}
-          autoComplete="off"
         >
           <Form.Item
             label="Username"

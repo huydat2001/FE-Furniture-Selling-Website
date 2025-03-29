@@ -11,9 +11,11 @@ const UserPage = () => {
   const [pageSize, setPageSize] = useState(5);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     fetchUser();
   }, [current, pageSize]);
+
   const fetchUser = async () => {
     const res = await getAllUserAPI(current, pageSize);
     if (res.data) {
@@ -22,6 +24,7 @@ const UserPage = () => {
       setLoading(false);
     }
   };
+
   return (
     <>
       <h1 className="text-3xl font-bold mb-6">Users</h1>
@@ -45,6 +48,7 @@ const UserPage = () => {
         setPageSize={setPageSize}
         total={total}
         loading={loading}
+        fetchUser={fetchUser}
       />
     </>
   );

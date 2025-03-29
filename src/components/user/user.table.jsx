@@ -1,7 +1,13 @@
-import { Popconfirm, Space, Table } from "antd";
+import { notification, Popconfirm, Space, Table } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import UserUpDateFormComponent from "./user.update.form";
+import { useState } from "react";
+import { deleteUserAPI } from "../../services/api.service.user";
+import UserDetailComponent from "./user.detail";
 
 const UserTableComponent = (props) => {
+  const [dataUpdate, setDataUpdate] = useState(null);
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const {
     dataUser,
     current,
@@ -10,7 +16,25 @@ const UserTableComponent = (props) => {
     setPageSize,
     total,
     loading,
+    fetchUser,
   } = props;
+
+  const deleteUser = async (id) => {
+    const res = await deleteUserAPI(id);
+    if (res && res.data) {
+      notification.success({
+        message: "Xóa thành công",
+        description: "Xóa người dùng thành công",
+      });
+      fetchUser();
+    } else {
+      notification.error({
+        message: "Xóa thất bại",
+        description: `Xóa người dùng thất bại`,
+      });
+    }
+  };
+
   const columns = [
     {
       title: "STT",
@@ -27,7 +51,7 @@ const UserTableComponent = (props) => {
       title: "Tên đăng nhập",
       dataIndex: "username",
       key: "username",
-      responsive: ["md"],
+      // responsive: ["sm"],
       width: "25%",
       align: "center",
 
@@ -51,11 +75,11 @@ const UserTableComponent = (props) => {
       align: "center",
     },
     {
-      title: "Quyền",
+      title: "Quyền hạn",
       dataIndex: "role",
       key: "role",
-      responsive: ["md"],
-      width: "5%",
+      responsive: ["sm"],
+      width: "8%",
       align: "center",
     },
     {
@@ -69,17 +93,21 @@ const UserTableComponent = (props) => {
         <Space size="middle">
           <div style={{ display: "flex", gap: "30px" }}>
             <EditOutlined
+              className="text-lg"
               style={{ cursor: "pointer", color: "orange" }}
               onClick={() => {
-                // setDataUpdate(record);
-                // setIsModalUpdateOpen(true);
+                if (record) {
+                  setDataUpdate(record); //
+                  setIsModalUpdateOpen(true);
+                }
               }}
             />
             <Popconfirm
+              className="text-lg"
               title="Confirm delete"
               description="Chắc chắn xóa user này"
               onConfirm={() => {
-                // deleteUser(record._id);
+                deleteUser(record._id);
               }}
               okText="Có"
               cancelText="không"
@@ -111,6 +139,7 @@ const UserTableComponent = (props) => {
         dataSource={dataUser}
         onChange={onChange}
         pagination={{
+          position: ["bottomCenter"],
           current: current,
           pageSize: pageSize,
           showSizeChanger: true,
@@ -120,12 +149,21 @@ const UserTableComponent = (props) => {
             return (
               <div>
                 {" "}
-                {range[0]}-{range[1]} trên {total} rows
+                {range[0]}-{range[1]} trên {total} hàng
               </div>
             );
           },
         }}
+        // scroll={{ x: 700 }}
       />
+      <UserUpDateFormComponent
+        dataUpdate={dataUpdate}
+        setdataUpdate={setDataUpdate}
+        isModalUpdateOpen={isModalUpdateOpen}
+        setIsModalUpdateOpen={setIsModalUpdateOpen}
+        fetchUser={fetchUser}
+      />
+      <UserDetailComponent />
     </>
   );
 };
