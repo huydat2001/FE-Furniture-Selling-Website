@@ -2,12 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import UserPage from "./pages/user.jsx";
 import ErrorPage from "./pages/errorPage.jsx";
 import { AuthWrapper } from "./contexts/auth.context.jsx";
-import Analytic from "./pages/analytic.jsx";
-import AppPage from "./pages/appds.jsx";
+import AppPage from "./pages/admin/appds.jsx";
+import Analytic from "./pages/admin/analytic.jsx";
 import "./index.css";
+import UserPage from "./pages/admin/user.jsx";
+import LoginPage from "./pages/login.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
         element: <UserPage />,
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(

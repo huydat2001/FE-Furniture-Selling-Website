@@ -1,9 +1,9 @@
 import { Breadcrumb } from "antd";
 import { Link } from "react-router-dom";
-import UserTableComponent from "../components/user/user.table";
-import UserFormComponent from "../components/user/user.form";
+import UserTableComponent from "../../components/user/user.table";
+import UserFormComponent from "../../components/user/user.form";
 import { useEffect, useState } from "react";
-import { getAllUserAPI } from "../services/api.service.user";
+import { getAllUserAPI } from "../../services/api.service.user";
 
 const UserPage = () => {
   const [dataUser, setDataUser] = useState([]);
