@@ -14,6 +14,7 @@ import {
   getWardAPI,
 } from "../../services/address/api.address";
 import { createUserAPI } from "../../services/api.service.user";
+import { PlusOutlined } from "@ant-design/icons";
 
 const UserFormComponent = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -99,7 +100,8 @@ const UserFormComponent = (props) => {
       ...values,
       address: residenceLabels,
     };
-
+    console.log("updatedValues :>> ", updatedValues);
+    console.log("values :>> ", values);
     const res = await createUserAPI(values);
     if (res.data) {
       notification.success({
@@ -134,6 +136,7 @@ const UserFormComponent = (props) => {
           setIsModalOpen(true);
         }}
         className="mb-4"
+        icon={<PlusOutlined />}
       >
         Tạo người dùng
       </Button>
@@ -158,6 +161,7 @@ const UserFormComponent = (props) => {
           onFinishFailed={onFinishFailed}
         >
           <Form.Item
+            hasFeedback
             label="Username"
             name="username"
             rules={[
@@ -175,6 +179,7 @@ const UserFormComponent = (props) => {
             <Input />
           </Form.Item>
           <Form.Item
+            hasFeedback
             label="Email"
             name="email"
             rules={[
@@ -189,6 +194,7 @@ const UserFormComponent = (props) => {
           </Form.Item>
 
           <Form.Item
+            hasFeedback
             label="Mật khẩu"
             name="password"
             rules={[
@@ -230,6 +236,7 @@ const UserFormComponent = (props) => {
           </Form.Item>
 
           <Form.Item
+            hasFeedback
             label="Số điện thoại"
             name="phone"
             rules={[
@@ -269,8 +276,10 @@ const UserFormComponent = (props) => {
           </Form.Item>
 
           <Form.Item
+            hasFeedback
             label="Quyền"
             name="role"
+            defaultValue="customer"
             rules={[{ required: true, message: "Quyền không được để trống" }]}
           >
             <Select allowClear>

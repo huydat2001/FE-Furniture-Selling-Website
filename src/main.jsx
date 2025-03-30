@@ -10,6 +10,7 @@ import "./index.css";
 import UserPage from "./pages/admin/user.jsx";
 import LoginPage from "./pages/login.jsx";
 import PrivateRoute from "./pages/private.route.jsx";
+import CategoryPage from "./pages/admin/category.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -42,6 +43,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <UserPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/categorys",
+        element: (
+          <PrivateRoute>
+            <CategoryPage />
           </PrivateRoute>
         ),
       },

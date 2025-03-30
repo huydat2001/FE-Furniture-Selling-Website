@@ -101,6 +101,16 @@ function App() {
           <Layout className="min-h-screen">
             {/* {user && user._id && ( */}
             <Sider
+              style={{
+                overflow: "auto",
+                height: "100vh",
+                position: "sticky",
+                insetInlineStart: 0,
+                top: 0,
+                bottom: 0,
+                scrollbarWidth: "thin",
+                scrollbarGutter: "stable",
+              }}
               theme="dark"
               ref={siderRef}
               width={250}
@@ -109,7 +119,7 @@ function App() {
               trigger={null}
               className={`${isSiderVisible ? "block" : "hidden"} md:block ${
                 collapsed ? "w-20" : "w-64"
-              } transition-all duration-300 fixed md:static top-0 left-0 h-full z-50`} // Fixed trên mobile, static trên md
+              } transition-all duration-300 fixed md:static top-0 left-0 z-50`} // Fixed trên mobile, static trên md
             >
               <Navbar setCollapsed={setCollapsed} collapsed={collapsed} />
             </Sider>
@@ -120,6 +130,14 @@ function App() {
               }`}
             >
               <Header
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 1,
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                }}
                 className={`bg-slate-50 p-0 flex items-center justify-between transition-all duration-300`}
               >
                 <HeaderLayout

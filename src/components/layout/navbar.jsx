@@ -10,6 +10,7 @@ import { BsFillMenuAppFill } from "react-icons/bs";
 import { IoAnalytics } from "react-icons/io5";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
+import { BiSolidCategory } from "react-icons/bi";
 const Navbar = (props) => {
   const [current, setCurrent] = useState("");
   const [openKeys, setOpenKeys] = useState([]);
@@ -18,7 +19,7 @@ const Navbar = (props) => {
   const { collapsed, setCollapsed } = props;
   useEffect(() => {
     if (location && location.pathname) {
-      const allRoutes = ["users", "apps"];
+      const allRoutes = ["users", "apps", "categorys", "analytics"];
       const currentRoute = allRoutes.find(
         (item) => `/${item}` === location.pathname
       );
@@ -68,6 +69,11 @@ const Navbar = (props) => {
           label: <Link to="/users">User</Link>,
           key: "users",
           icon: <FaUser />,
+        },
+        {
+          label: <Link to="/categorys">Category</Link>,
+          key: "categorys",
+          icon: <BiSolidCategory />,
         },
       ],
     },
