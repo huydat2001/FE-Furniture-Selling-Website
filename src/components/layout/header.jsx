@@ -4,11 +4,14 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   SearchOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Tooltip } from "antd";
-
-import { useState } from "react";
+import { Avatar, Button, Drawer, message, Tooltip } from "antd";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../contexts/auth.context";
+import { useNavigate } from "react-router-dom";
 const HeaderLayout = (props) => {
+  const [openProfile, setOpenProfile] = useState(false);
   const {
     collapsed,
     setCollapsed,
@@ -17,17 +20,9 @@ const HeaderLayout = (props) => {
     isSiderVisible,
     setIsSiderVisible,
   } = props;
-  const getPageInfo = () => {
-    switch (location.pathname) {
-      case "/users":
-        return { title: "Users", breadcrumb: "Management / User" };
-      case "/apps":
-        return { title: "Apps", breadcrumb: "Overview / App" };
-      default:
-        return { title: "Analytics", breadcrumb: "Overview / Analytics" };
-    }
-  };
-  const { title, breadcrumb } = getPageInfo();
+  const { user, setUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const handleToggle = () => {
     if (isMobile) {
       // Trên mobile: Toggle hiển thị/ẩn Sider
@@ -42,6 +37,20 @@ const HeaderLayout = (props) => {
     }
     setUserToggled(true); // Đánh dấu người dùng đã toggle thủ công
   };
+  const logout = () => {
+    localStorage.removeItem("access_token");
+    setUser({
+      email: "",
+      phone: "",
+      fullName: "",
+      role: "",
+      avatar: "",
+      id: "",
+    });
+    message.success("logout thành công");
+    navigate("/login");
+  };
+
   return (
     <>
       <div className="flex items-center justify-between w-full">
@@ -63,10 +72,7 @@ const HeaderLayout = (props) => {
           onClick={handleToggle}
           className="text-xl md:text-2xl"
         />
-        {/* <div className="flex-1 px-4">
-          <h1 className="text-xl md:text-2xl font-bold">{title}</h1>
-          <p className="text-sm text-gray-500">{breadcrumb}</p>
-        </div> */}
+
         <div className="flex items-center gap-2 md:gap-4 pr-4">
           <Tooltip title="search">
             <Button
@@ -75,12 +81,73 @@ const HeaderLayout = (props) => {
               icon={<SearchOutlined />}
             />
           </Tooltip>
-          <Tooltip title="search">
+          <Tooltip title="Thông báo">
             <Button
               className="text-sm md:text-base"
               shape="circle"
               icon={<BellOutlined />}
             />
+          </Tooltip>
+          <Tooltip title="User">
+            <Button
+              className="text-sm md:text-base"
+              shape="circle"
+              icon={<UserOutlined />}
+              onClick={() => setOpenProfile(true)}
+            />
+            {user._id ? (
+              <Drawer
+                className="text-center"
+                onClose={() => {
+                  setOpenProfile(false);
+                }}
+                open={openProfile}
+                styles={{
+                  header: { display: "none" },
+                  footer: { height: "20vh", borderTop: "none" },
+                }}
+                footer={
+                  <Button
+                    danger
+                    className="min-w-full min-h-12"
+                    onClick={() => {
+                      logout();
+                    }}
+                  >
+                    Đăng xuất
+                  </Button>
+                }
+              >
+                <Avatar size={90} icon={<UserOutlined />} />
+                <h1 className="text-lg font-bold my-10">{user.fullName}</h1>
+                <p className="text-sm text-neutral-500 font-semibold">
+                  {user.email}
+                </p>
+              </Drawer>
+            ) : (
+              <Drawer
+                className="text-center"
+                onClose={() => {
+                  setOpenProfile(false);
+                }}
+                open={openProfile}
+                styles={{
+                  header: { display: "none" },
+                  footer: { height: "20vh", borderTop: "none" },
+                }}
+                footer={
+                  <Button
+                    danger
+                    className="min-w-full min-h-12"
+                    onClick={() => {
+                      navigate("/login");
+                    }}
+                  >
+                    Đăng nhập
+                  </Button>
+                }
+              ></Drawer>
+            )}
           </Tooltip>
         </div>
       </div>

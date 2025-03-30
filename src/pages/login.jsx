@@ -1,10 +1,43 @@
-import { Button, Checkbox, Form, Input, Typography } from "antd";
+import {
+  Button,
+  Checkbox,
+  Form,
+  Input,
+  message,
+  notification,
+  Typography,
+} from "antd";
+import { loginAPI } from "../services/login";
+import { useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { AuthContext } from "../contexts/auth.context";
 
 const { Title, Text } = Typography;
 
 const LoginPage = () => {
-  const onFinish = (values) => {
-    console.log("Success:", values);
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const { user, setUser } = useContext(AuthContext);
+
+  const onFinish = async (values) => {
+    setLoading(true);
+    const res = await loginAPI(values);
+    if (res && res.data) {
+      notification.success({
+        message: "Đăng nhập thành công",
+        description: `Chào mừng ${res.data.fullName}`,
+      });
+      localStorage.setItem("access_token", res.accessToken);
+      setUser(res.data);
+      navigate("/");
+    } else {
+      notification.error({
+        message: "Lỗi Đăng nhập",
+        description: res.message,
+      });
+    }
+    setLoading(false);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -77,6 +110,7 @@ const LoginPage = () => {
 
           <Form.Item>
             <Button
+              loading={loading}
               type="primary"
               htmlType="submit"
               block

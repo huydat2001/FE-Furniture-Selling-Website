@@ -5,18 +5,11 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use(
-  // instance.defaults.headers.common["Authorization"] = AUTH_TOKEN;
-
   function (config) {
-    // if (
-    //   typeof window !== "undefined" &&
-    //   window &&
-    //   window.localStorage &&
-    //   window.localStorage.getItem("access_token")
-    // ) {
-    //   config.headers.Authorization =
-    //     "Bearer " + window.localStorage.getItem("access_token");
-    // }
+    const token = window.localStorage.getItem("access_token");
+    if (token) {
+      config.headers.Authorization = "Bearer " + token;
+    }
 
     return config;
   },

@@ -99,7 +99,6 @@ const UserFormComponent = (props) => {
       ...values,
       address: residenceLabels,
     };
-    console.log("Successbtn:", updatedValues);
 
     const res = await createUserAPI(values);
     if (res.data) {
