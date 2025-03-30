@@ -98,55 +98,151 @@ const HeaderLayout = (props) => {
             {user._id ? (
               <Drawer
                 className="text-center"
-                onClose={() => {
-                  setOpenProfile(false);
-                }}
+                onClose={() => setOpenProfile(false)}
                 open={openProfile}
                 styles={{
-                  header: { display: "none" },
-                  footer: { height: "20vh", borderTop: "none" },
+                  body: {
+                    padding: "24px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  },
                 }}
                 footer={
                   <Button
                     danger
-                    className="min-w-full min-h-12"
-                    onClick={() => {
-                      logout();
+                    type="primary"
+                    className="min-w-full"
+                    style={{
+                      height: "48px",
+                      fontSize: "16px",
+                      fontWeight: "bold",
                     }}
+                    onClick={() => logout()}
                   >
                     Đăng xuất
                   </Button>
                 }
               >
-                <Avatar size={90} icon={<UserOutlined />} />
-                <h1 className="text-lg font-bold my-10">{user.fullName}</h1>
-                <p className="text-sm text-neutral-500 font-semibold">
+                <Avatar
+                  size={100}
+                  icon={<UserOutlined />}
+                  style={{
+                    backgroundColor: "#87d068",
+                    marginBottom: "16px",
+                  }}
+                />
+                <h1
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    marginBottom: "8px",
+                  }}
+                >
+                  {user.fullName}
+                </h1>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#888",
+                    marginBottom: "24px",
+                  }}
+                >
                   {user.email}
                 </p>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px",
+                    width: "100%",
+                  }}
+                >
+                  <Button
+                    type="default"
+                    className="min-w-full"
+                    style={{
+                      height: "40px",
+                      fontSize: "14px",
+                    }}
+                    onClick={() => {
+                      message.info("Chức năng đang phát triển!");
+                    }}
+                  >
+                    Cập nhật thông tin
+                  </Button>
+                  <Button
+                    type="default"
+                    className="min-w-full"
+                    style={{
+                      height: "40px",
+                      fontSize: "14px",
+                    }}
+                    onClick={() => {
+                      message.info("Chức năng đang phát triển!");
+                    }}
+                  >
+                    Đổi mật khẩu
+                  </Button>
+                </div>
               </Drawer>
             ) : (
               <Drawer
                 className="text-center"
-                onClose={() => {
-                  setOpenProfile(false);
-                }}
+                onClose={() => setOpenProfile(false)}
                 open={openProfile}
                 styles={{
-                  header: { display: "none" },
-                  footer: { height: "20vh", borderTop: "none" },
+                  body: {
+                    padding: "24px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  },
                 }}
                 footer={
                   <Button
-                    danger
-                    className="min-w-full min-h-12"
-                    onClick={() => {
-                      navigate("/login");
+                    type="primary"
+                    className="min-w-full"
+                    style={{
+                      height: "48px",
+                      fontSize: "16px",
+                      fontWeight: "bold",
                     }}
+                    onClick={() => navigate("/login")}
                   >
                     Đăng nhập
                   </Button>
                 }
-              ></Drawer>
+              >
+                <Avatar
+                  size={100}
+                  icon={<UserOutlined />}
+                  style={{
+                    backgroundColor: "#f56a00",
+                    marginBottom: "16px",
+                  }}
+                />
+                <h1
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Chào mừng!
+                </h1>
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#888",
+                    marginBottom: "24px",
+                  }}
+                >
+                  Vui lòng đăng nhập để tiếp tục.
+                </p>
+              </Drawer>
             )}
           </Tooltip>
         </div>

@@ -8,6 +8,8 @@ import UserDetailComponent from "./user.detail";
 const UserTableComponent = (props) => {
   const [dataUpdate, setDataUpdate] = useState(null);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
+  const [userDetail, setUserDetail] = useState(null);
+  const [openDraw, setOpenDraw] = useState(false);
   const {
     dataUser,
     current,
@@ -55,7 +57,19 @@ const UserTableComponent = (props) => {
       width: "25%",
       align: "center",
 
-      render: (text) => <a>{text}</a>,
+      render: (value, record) => {
+        return (
+          <a
+            className="text-blue-500"
+            onClick={() => {
+              setUserDetail(record);
+              setOpenDraw(true);
+            }}
+          >
+            {value}
+          </a>
+        );
+      },
     },
     {
       title: "Email",
@@ -163,7 +177,12 @@ const UserTableComponent = (props) => {
         setIsModalUpdateOpen={setIsModalUpdateOpen}
         fetchUser={fetchUser}
       />
-      <UserDetailComponent />
+      <UserDetailComponent
+        openDraw={openDraw}
+        setOpenDraw={setOpenDraw}
+        userDetail={userDetail}
+        setUserDetail={setUserDetail}
+      />
     </>
   );
 };
