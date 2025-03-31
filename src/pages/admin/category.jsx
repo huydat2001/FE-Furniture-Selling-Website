@@ -1,9 +1,28 @@
 import { Breadcrumb, Card, Col, Row, Typography } from "antd";
 import { Link } from "react-router-dom";
 import CategoryFormComponent from "../../components/category/category.form";
+import CategoryTableComponent from "../../components/category/category.table";
+import { useEffect, useState } from "react";
+import { getAllCategoryAPI } from "../../services/api.service.category";
 const { Title } = Typography;
 
 const CategoryPage = () => {
+  const [data, setData] = useState([]);
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetchCategory();
+  }, [current, pageSize]);
+  const fetchCategory = async () => {
+    const res = await getAllCategoryAPI(current, pageSize);
+    if (res.data) {
+      setData(res.data.result);
+      setTotal(res.data.pagination.total);
+      setLoading(false);
+    }
+  };
   return (
     <>
       <div className="p-3 bg-gray-100 min-h-screen">
@@ -36,12 +55,12 @@ const CategoryPage = () => {
             </Col>
             <Col xs={24} lg={6}>
               <Card
-                title="Thêm người dùng"
+                title="Thêm danh mục"
                 style={{ borderRadius: "8px" }}
                 styles={{ body: { padding: "16px" } }}
                 className="text-center"
               >
-                <CategoryFormComponent />
+                <CategoryFormComponent fetchCategory={fetchCategory} />
               </Card>
             </Col>
           </Row>
@@ -55,16 +74,16 @@ const CategoryPage = () => {
               style={{ borderRadius: "8px" }}
               styles={{ body: { padding: "16px" } }}
             >
-              {/* <UserTableComponent
-                dataUser={dataUser}
+              <CategoryTableComponent
+                data={data}
                 current={current}
                 setCurrent={setCurrent}
                 pageSize={pageSize}
                 setPageSize={setPageSize}
                 total={total}
                 loading={loading}
-                fetchUser={fetchUser}
-              /> */}
+                fetchCategory={fetchCategory}
+              />
             </Card>
           </Col>
         </Row>

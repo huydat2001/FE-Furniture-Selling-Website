@@ -13,6 +13,7 @@ const createUserAPI = (value) => {
     fullName: value.fullName,
     role: value.role,
     phone: value.phone,
+    status: value.status,
     city: value.address?.[0] ?? undefined,
     state: value.address?.[1] ?? undefined,
     street: value.address?.[2] ?? undefined,

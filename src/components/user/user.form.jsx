@@ -88,9 +88,6 @@ const UserFormComponent = (props) => {
     }));
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
   const resetAndCloseModal = () => {
     userForm.resetFields();
     setIsModalOpen(false);
@@ -100,7 +97,6 @@ const UserFormComponent = (props) => {
       ...values,
       address: residenceLabels,
     };
-    console.log("updatedValues :>> ", updatedValues);
     console.log("values :>> ", values);
     const res = await createUserAPI(values);
     if (res.data) {
@@ -112,7 +108,7 @@ const UserFormComponent = (props) => {
       await fetchUser();
       resetAndCloseModal();
     } else {
-      const errorMessages = res.error.messages;
+      const errorMessages = res.error.message;
       notification.error({
         message: "Lỗi tạo người dùng",
         description: Array.isArray(errorMessages) ? (
@@ -146,9 +142,7 @@ const UserFormComponent = (props) => {
         onOk={() => {
           userForm.submit();
         }}
-        onCancel={() => {
-          setIsModalOpen(false);
-        }}
+        onCancel={resetAndCloseModal}
         maskClosable={false}
       >
         <Form
@@ -158,7 +152,6 @@ const UserFormComponent = (props) => {
           wrapperCol={{ span: 20 }}
           style={{ maxWidth: 700 }}
           onFinish={handleSubmitBtn}
-          onFinishFailed={onFinishFailed}
         >
           <Form.Item
             hasFeedback
@@ -279,13 +272,19 @@ const UserFormComponent = (props) => {
             hasFeedback
             label="Quyền"
             name="role"
-            defaultValue="customer"
+            initialValue="customer"
             rules={[{ required: true, message: "Quyền không được để trống" }]}
           >
             <Select allowClear>
               <Option value="admin">Admin</Option>
               <Option value="customer">Customer</Option>
               <Option value="staff">Staff</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Trạng thái" name="status" initialValue="active">
+            <Select allowClear>
+              <Option value="active">Hoạt động</Option>
+              <Option value="banned">Ngưng hoạt động</Option>
             </Select>
           </Form.Item>
         </Form>

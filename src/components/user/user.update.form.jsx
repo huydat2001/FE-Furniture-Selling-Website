@@ -1,6 +1,11 @@
 import { Cascader, Form, Input, Modal, notification, Select } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { updateUserAPI } from "../../services/api.service.user";
+import {
+  getDistrictAPI,
+  getProvinceAPI,
+  getWardAPI,
+} from "../../services/address/api.address";
 
 const UserUpDateFormComponent = (props) => {
   const {
@@ -10,14 +15,73 @@ const UserUpDateFormComponent = (props) => {
     setIsModalUpdateOpen,
     fetchUser,
   } = props;
+  const [residenceLabels, setResidenceLabels] = useState([]);
+  const [options, setOptions] = useState([]);
+
   const [updateForm] = Form.useForm();
   useEffect(() => {
     onFill();
   }, [dataUpdate]);
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      try {
+        const response = await getProvinceAPI();
+        const provinces = transformProvinces(response.data);
+        setOptions(provinces);
+      } catch (error) {
+        console.error("Lỗi khi lấy tỉnh/thành:", error);
+      }
+    };
+    fetchProvinces();
+  }, []);
   const { Option } = Select;
+  const transformProvinces = (provinces) => {
+    return provinces.map((province) => ({
+      value: province.ProvinceID,
+      label: province.ProvinceName,
+      isLeaf: false, // Cho phép tải dữ liệu con (huyện)
+    }));
+  };
+  const transformDistricts = (districts) => {
+    return districts.map((district) => ({
+      value: district.DistrictID,
+      label: district.DistrictName,
+      isLeaf: false, // Quận/huyện là cấp cuối (hoặc bạn có thể thêm Phường/Xã)
+    }));
+  };
+  const transformWard = (ward) => {
+    return ward.map((ward) => ({
+      value: ward.WardCode,
+      label: ward.WardName,
+      isLeaf: true, //  thêm Phường/Xã)
+    }));
+  };
+  const loadData = async (selectedOptions) => {
+    const targetOption = selectedOptions[selectedOptions.length - 1];
+    targetOption.loading = true;
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    try {
+      // Kiểm tra cấp hiện tại (Tỉnh/Thành hay Quận/Huyện)
+      if (selectedOptions.length === 1) {
+        // Cấp 1: Tỉnh/Thành -> Tải Quận/Huyện
+        const provinceId = targetOption.value;
+        const response = await getDistrictAPI(provinceId);
+        const districts = transformDistricts(response.data);
+        targetOption.loading = false;
+        targetOption.children = districts;
+      } else if (selectedOptions.length === 2) {
+        // Cấp 2: Quận/Huyện -> Tải Phường/Xã
+        const districtId = targetOption.value;
+        const response = await getWardAPI(districtId);
+        const wards = transformWard(response.data);
+        targetOption.loading = false;
+        targetOption.children = wards;
+      }
+      setOptions([...options]); // Cập nhật lại options
+    } catch (error) {
+      targetOption.loading = false;
+      console.error("Lỗi khi tải dữ liệu:", error);
+    }
   };
   const onFill = () => {
     if (dataUpdate) {
@@ -40,7 +104,7 @@ const UserUpDateFormComponent = (props) => {
       setIsModalUpdateOpen(false);
       await fetchUser();
     } else {
-      const errorMessages = res.error.messages;
+      const errorMessages = res.error.message;
       notification.error({
         message: "Lỗi tạo người dùng",
         description: Array.isArray(errorMessages) ? (
@@ -76,7 +140,6 @@ const UserUpDateFormComponent = (props) => {
           wrapperCol={{ span: 20 }}
           style={{ maxWidth: 700 }}
           onFinish={handleUpdate}
-          onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
           <Form.Item label="ID" name="id">
@@ -112,8 +175,8 @@ const UserUpDateFormComponent = (props) => {
             }}
           >
             <Cascader
-              //   options={options}
-              //   loadData={loadData}
+              options={options}
+              loadData={loadData}
               placeholder="Chọn địa chỉ"
               changeOnSelect
               onChange={(value, selectedOptions) => {

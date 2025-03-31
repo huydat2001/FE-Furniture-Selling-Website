@@ -32,7 +32,16 @@ const UserDetailComponent = (props) => {
       ) : (
         <>
           {/* Avatar và tiêu đề */}
-          <div style={{ textAlign: "center", marginBottom: "24px" }}>
+          <div
+            style={{
+              textAlign: "center",
+              marginBottom: "24px",
+              padding: "16px",
+              background: "#fff",
+              borderRadius: "8px",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+            }}
+          >
             <UserOutlined style={{ fontSize: "40px", color: "#1890ff" }} />
             <Title level={4} style={{ marginTop: "8px" }}>
               {userDetail.fullName || "Chưa có tên"}

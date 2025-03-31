@@ -1,30 +1,42 @@
-import { PlusOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Cascader,
-  Form,
-  Input,
-  Modal,
-  notification,
-  Select,
-} from "antd";
+import { Cascader, Form, Input, Modal, notification, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import {
-  createCategoryAPI,
   getAllCategoryAPI,
+  updateCategoryAPI,
 } from "../../services/api.service.category";
 
-const CategoryFormComponent = (props) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [categoryForm] = Form.useForm();
-  const { fetchCategory } = props;
+const CategoryUpdateFormComponent = (props) => {
   const [optionCategory, setOptionCategory] = useState([]);
+  const {
+    isModalUpdateOpen,
+    setIsModalUpdateOpen,
+    dataDetail,
+    setDataDetail,
+    fetchCategory,
+  } = props;
   useEffect(() => {
+    onFill();
     getCategory();
-  }, []);
+  }, [isModalUpdateOpen]);
+  const [categoryForm] = Form.useForm();
   const { Option } = Select;
 
+  const resetAndCloseModal = () => {
+    categoryForm.resetFields();
+    setIsModalUpdateOpen(false);
+  };
+  const onFill = () => {
+    if (dataDetail) {
+      categoryForm.setFieldsValue({
+        id: dataDetail._id,
+        name: dataDetail.name,
+        description: dataDetail.description,
+        parent: dataDetail.parent?._id || undefined,
+        status: dataDetail.status,
+      });
+    }
+  };
   const getCategory = async () => {
     const res = await getAllCategoryAPI();
     const options = res.data.result
@@ -37,21 +49,15 @@ const CategoryFormComponent = (props) => {
       );
     setOptionCategory(options);
   };
-  const resetAndCloseModal = () => {
-    categoryForm.resetFields();
-    setIsModalOpen(false);
-  };
-  const handleSubmitBtn = async (value) => {
-    const res = await createCategoryAPI(value);
+  const handleUpdate = async (values) => {
+    const res = await updateCategoryAPI(values);
     if (res.data) {
       notification.success({
-        message: "Tạo danh mục",
-        description: "Tạo danh mục thành công",
+        message: "Cập nhật danh mục",
+        description: "Cập nhật danh mục thành công",
       });
-
-      // await fetchUser();
-      resetAndCloseModal();
-      fetchCategory();
+      setIsModalUpdateOpen(false);
+      await fetchCategory();
     } else {
       const errorMessages = res.error.message;
       notification.error({
@@ -68,22 +74,11 @@ const CategoryFormComponent = (props) => {
       });
     }
   };
-
   return (
     <>
-      <Button
-        type="primary"
-        onClick={() => {
-          setIsModalOpen(true);
-        }}
-        className="mb-4"
-        icon={<PlusOutlined />}
-      >
-        Tạo danh mục
-      </Button>
       <Modal
-        title={<div className="text-center">Tạo danh mục mới</div>}
-        open={isModalOpen}
+        title={<div className="text-center">Chỉnh sửa danh mục</div>}
+        open={isModalUpdateOpen}
         onOk={() => {
           categoryForm.submit();
         }}
@@ -96,9 +91,12 @@ const CategoryFormComponent = (props) => {
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 20 }}
           style={{ maxWidth: 700 }}
-          onFinish={handleSubmitBtn}
+          onFinish={handleUpdate}
           //   onFinishFailed={onFinishFailed}
         >
+          <Form.Item label="ID" name="id">
+            <Input disabled={true} />
+          </Form.Item>
           <Form.Item
             hasFeedback
             label="Tên danh mục"
@@ -142,4 +140,4 @@ const CategoryFormComponent = (props) => {
     </>
   );
 };
-export default CategoryFormComponent;
+export default CategoryUpdateFormComponent;

@@ -1,42 +1,39 @@
-import { notification, Popconfirm, Space, Table, Tag } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import UserUpDateFormComponent from "./user.update.form";
+import { notification, Popconfirm, Space, Table, Tag } from "antd";
 import { useState } from "react";
-import { deleteUserAPI } from "../../services/api.service.user";
-import UserDetailComponent from "./user.detail";
+import CategoryDetailComponent from "./category.detail";
+import CategoryUpdateFormComponent from "./category.update.form";
+import { deleteCategoryAPI } from "../../services/api.service.category";
 
-const UserTableComponent = (props) => {
-  const [dataUpdate, setDataUpdate] = useState(null);
-  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
-  const [userDetail, setUserDetail] = useState(null);
+const CategoryTableComponent = (props) => {
   const [openDraw, setOpenDraw] = useState(false);
+  const [dataDetail, setDataDetail] = useState(null);
+  const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
   const {
-    dataUser,
+    data,
     current,
     setCurrent,
     pageSize,
     setPageSize,
     total,
     loading,
-    fetchUser,
+    fetchCategory,
   } = props;
-
-  const deleteUser = async (id) => {
-    const res = await deleteUserAPI(id);
+  const deleteCategory = async (id) => {
+    const res = await deleteCategoryAPI(id);
     if (res && res.data) {
       notification.success({
         message: "Xóa thành công",
-        description: "Xóa người dùng thành công",
+        description: "Xóa danh mục thành công",
       });
-      fetchUser();
+      fetchCategory();
     } else {
       notification.error({
         message: "Xóa thất bại",
-        description: `Xóa người dùng thất bại`,
+        description: `Xóa danh mục thất bại`,
       });
     }
   };
-
   const columns = [
     {
       title: "STT",
@@ -50,9 +47,9 @@ const UserTableComponent = (props) => {
       },
     },
     {
-      title: "Tên đăng nhập",
-      dataIndex: "username",
-      key: "username",
+      title: "Tên danh mục",
+      dataIndex: "name",
+      key: "name",
       width: "25%",
       align: "center",
 
@@ -61,7 +58,7 @@ const UserTableComponent = (props) => {
           <a
             className="text-blue-500"
             onClick={() => {
-              setUserDetail(record);
+              setDataDetail(record);
               setOpenDraw(true);
             }}
           >
@@ -70,26 +67,33 @@ const UserTableComponent = (props) => {
         );
       },
     },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-      responsive: ["md"],
-      width: "25%",
-      align: "center",
-    },
 
     {
+      title: "Danh mục cha",
+      key: "parent",
+      dataIndex: "parent",
+      responsive: ["lg"],
+      width: "25%",
+      align: "center",
+      render: (_, values) => {
+        return (
+          <>{values.parent ? values.parent.name : "Không có danh mục cha"}</>
+        );
+      },
+    },
+    {
       title: "Trạng thái",
-      key: "status",
       dataIndex: "status",
-      responsive: ["md"],
-      width: "15%",
+      key: "status",
+      responsive: ["sm"],
+      width: "10%",
       align: "center",
       render: (_, { status }) => {
-        let color = status === "banned" ? "volcano" : "green";
+        let color = status === "inactive" ? "volcano" : "green";
         let value =
-          status === "banned" ? (status = "Tạm dừng") : (status = "Hoạt động");
+          status === "inactive"
+            ? (status = "Ngưng hoạt động")
+            : (status = "Hoạt động");
         return (
           <>
             <Tag color={color} key={status}>
@@ -98,14 +102,6 @@ const UserTableComponent = (props) => {
           </>
         );
       },
-    },
-    {
-      title: "Quyền hạn",
-      dataIndex: "role",
-      key: "role",
-      responsive: ["sm"],
-      width: "10%",
-      align: "center",
     },
     {
       title: "Hành động",
@@ -121,7 +117,7 @@ const UserTableComponent = (props) => {
               style={{ cursor: "pointer", color: "orange" }}
               onClick={() => {
                 if (record) {
-                  setDataUpdate(record); //
+                  setDataDetail(record);
                   setIsModalUpdateOpen(true);
                 }
               }}
@@ -131,7 +127,7 @@ const UserTableComponent = (props) => {
               title="Confirm delete"
               description="Chắc chắn xóa user này"
               onConfirm={() => {
-                deleteUser(record._id);
+                deleteCategory(record._id);
               }}
               okText="Có"
               cancelText="không"
@@ -144,12 +140,10 @@ const UserTableComponent = (props) => {
       ),
     },
   ];
-
   const onChange = (pagination) => {
     setCurrent(pagination.current);
     setPageSize(pagination.pageSize);
   };
-
   return (
     <>
       <Table
@@ -160,7 +154,7 @@ const UserTableComponent = (props) => {
         rowKey={"_id"}
         className="rounded-t-3xl rounded-b-2xl"
         columns={columns}
-        dataSource={dataUser}
+        dataSource={data}
         onChange={onChange}
         pagination={{
           position: ["bottomCenter"],
@@ -178,22 +172,22 @@ const UserTableComponent = (props) => {
             );
           },
         }}
-        // scroll={{ x: 700 }}
       />
-      <UserUpDateFormComponent
-        dataUpdate={dataUpdate}
-        setdataUpdate={setDataUpdate}
-        isModalUpdateOpen={isModalUpdateOpen}
-        setIsModalUpdateOpen={setIsModalUpdateOpen}
-        fetchUser={fetchUser}
-      />
-      <UserDetailComponent
+      <CategoryDetailComponent
         openDraw={openDraw}
         setOpenDraw={setOpenDraw}
-        userDetail={userDetail}
-        setUserDetail={setUserDetail}
+        dataDetail={dataDetail}
+        setDataDetail={setDataDetail}
+      />
+      <CategoryUpdateFormComponent
+        dataDetail={dataDetail}
+        setDataDetail={setDataDetail}
+        isModalUpdateOpen={isModalUpdateOpen}
+        setIsModalUpdateOpen={setIsModalUpdateOpen}
+        fetchCategory={fetchCategory}
       />
     </>
   );
 };
-export default UserTableComponent;
+
+export default CategoryTableComponent;
