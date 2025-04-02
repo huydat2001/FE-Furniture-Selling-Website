@@ -45,7 +45,7 @@ const CategoryFormComponent = (props) => {
     const res = await createCategoryAPI(value);
     if (res.data) {
       notification.success({
-        message: "Tạo danh mục",
+        message: "Tạo thành công",
         description: "Tạo danh mục thành công",
       });
 

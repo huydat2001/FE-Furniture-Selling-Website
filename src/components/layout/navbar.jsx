@@ -10,7 +10,8 @@ import { BsFillMenuAppFill } from "react-icons/bs";
 import { IoAnalytics } from "react-icons/io5";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
-import { BiSolidCategory } from "react-icons/bi";
+import { BiSolidCategory, BiSolidDiscount } from "react-icons/bi";
+import { CiDiscount1 } from "react-icons/ci";
 const Navbar = (props) => {
   const [current, setCurrent] = useState("");
   const [openKeys, setOpenKeys] = useState([]);
@@ -19,13 +20,25 @@ const Navbar = (props) => {
   const { collapsed, setCollapsed } = props;
   useEffect(() => {
     if (location && location.pathname) {
-      const allRoutes = ["users", "apps", "categorys", "analytics"];
+      const allRoutes = [
+        "users",
+        "apps",
+        "categorys",
+        "analytics",
+        "discounts",
+      ];
       const currentRoute = allRoutes.find(
         (item) => `/${item}` === location.pathname
       );
       if (currentRoute) {
         setCurrent(currentRoute);
         if (currentRoute === "users") {
+          setOpenKeys(["management"]);
+        }
+        if (currentRoute === "categorys") {
+          setOpenKeys(["management"]);
+        }
+        if (currentRoute === "discounts") {
           setOpenKeys(["management"]);
         }
         if (currentRoute === "apps") {
@@ -75,6 +88,11 @@ const Navbar = (props) => {
           key: "categorys",
           icon: <BiSolidCategory />,
         },
+        {
+          label: <Link to="/discounts">Discount</Link>,
+          key: "discounts",
+          icon: <BiSolidDiscount />,
+        },
       ],
     },
   ];
@@ -86,8 +104,8 @@ const Navbar = (props) => {
           theme="dark"
           mode="inline"
           selectedKeys={[current]}
-          // openKeys={openKeys}
-          // onOpenChange={onOpenChange}
+          openKeys={openKeys}
+          onOpenChange={onOpenChange}
           // inlineCollapsed={collapsed}
           items={items}
           className="min-h-screen text-sm md:text-base"
