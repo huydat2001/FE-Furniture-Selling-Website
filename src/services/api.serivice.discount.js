@@ -4,7 +4,7 @@ const getAllDiscountAPI = (current, pageSize) => {
   if ((current, pageSize)) {
     URL_BACKEND = `/v1/api/discount?page=${current}&limit=${pageSize}`;
   }
-  URL_BACKEND = `/v1/api/Discount`;
+  URL_BACKEND = `/v1/api/discount`;
   return axios.get(URL_BACKEND);
 };
 const createDiscountAPI = (value) => {

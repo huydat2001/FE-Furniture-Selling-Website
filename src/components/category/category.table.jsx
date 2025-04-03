@@ -125,7 +125,7 @@ const CategoryTableComponent = (props) => {
             <Popconfirm
               className="text-lg"
               title="Confirm delete"
-              description="Chắc chắn xóa user này"
+              description="Chắc chắn xóa?"
               onConfirm={() => {
                 deleteCategory(record._id);
               }}

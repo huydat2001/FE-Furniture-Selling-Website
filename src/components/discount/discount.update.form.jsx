@@ -8,7 +8,7 @@ import {
   Select,
   Switch,
 } from "antd";
-import moment from "moment";
+
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { updateDiscountAPI } from "../../services/api.serivice.discount";

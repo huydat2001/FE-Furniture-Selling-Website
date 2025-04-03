@@ -8,13 +8,8 @@ import {
 
 const CategoryUpdateFormComponent = (props) => {
   const [optionCategory, setOptionCategory] = useState([]);
-  const {
-    isModalUpdateOpen,
-    setIsModalUpdateOpen,
-    dataDetail,
-    setDataDetail,
-    fetchCategory,
-  } = props;
+  const { isModalUpdateOpen, setIsModalUpdateOpen, dataDetail, fetchCategory } =
+    props;
   useEffect(() => {
     onFill();
     getCategory();

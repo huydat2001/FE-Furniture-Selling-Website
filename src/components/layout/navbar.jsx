@@ -26,6 +26,7 @@ const Navbar = (props) => {
         "categorys",
         "analytics",
         "discounts",
+        "brands",
       ];
       const currentRoute = allRoutes.find(
         (item) => `/${item}` === location.pathname
@@ -39,6 +40,9 @@ const Navbar = (props) => {
           setOpenKeys(["management"]);
         }
         if (currentRoute === "discounts") {
+          setOpenKeys(["management"]);
+        }
+        if (currentRoute === "brands") {
           setOpenKeys(["management"]);
         }
         if (currentRoute === "apps") {
@@ -91,6 +95,11 @@ const Navbar = (props) => {
         {
           label: <Link to="/discounts">Discount</Link>,
           key: "discounts",
+          icon: <BiSolidDiscount />,
+        },
+        {
+          label: <Link to="/brands">Brand</Link>,
+          key: "brands",
           icon: <BiSolidDiscount />,
         },
       ],

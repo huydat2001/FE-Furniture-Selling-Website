@@ -70,7 +70,8 @@ const CategoryPage = () => {
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={24}>
             <Card
-              title="Danh sách người dùng"
+              title="Danh sách danh mục
+              "
               style={{ borderRadius: "8px" }}
               styles={{ body: { padding: "16px" } }}
             >

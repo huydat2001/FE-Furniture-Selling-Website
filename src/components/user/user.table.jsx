@@ -129,7 +129,7 @@ const UserTableComponent = (props) => {
             <Popconfirm
               className="text-lg"
               title="Confirm delete"
-              description="Chắc chắn xóa user này"
+              description="Chắc chắn xóa?"
               onConfirm={() => {
                 deleteUser(record._id);
               }}
