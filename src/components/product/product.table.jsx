@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { deleteBrandAPI } from "../../services/api.service.brand";
 import { Image, notification, Popconfirm, Space, Table, Tag } from "antd";
+import { useState } from "react";
+import { deleteProductAPI } from "../../services/api.service.product";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import BrandDetailComponent from "./brand.detail";
-import BrandUpdateFormComponent from "./brand.update.form";
+import ProductDetailComponent from "./product.detail";
+import ProductUpdateFormComponent from "./product.update.form";
 
-const BrandTableComponent = (props) => {
+const ProductTableComponent = (props) => {
   const [openDraw, setOpenDraw] = useState(false);
   const [dataDetail, setDataDetail] = useState(null);
   const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false);
@@ -17,7 +17,7 @@ const BrandTableComponent = (props) => {
     setPageSize,
     total,
     loading,
-    fetchBrand,
+    fetchProduct,
     previewOpen,
     setPreviewOpen,
     previewImage,
@@ -26,26 +26,35 @@ const BrandTableComponent = (props) => {
     setFileList,
     uploadProps,
     uploadButton,
+    //
+    optionCategory,
+    setOptionCategory,
+    optionBrand,
+    setOptionBrand,
+    optionDiscount,
+    setOptionDiscount,
   } = props;
+
   const onChange = (pagination) => {
     setCurrent(pagination.current);
     setPageSize(pagination.pageSize);
   };
-  const deleteBrand = async (id) => {
-    const res = await deleteBrandAPI(id);
+  const deleteProduct = async (id) => {
+    const res = await deleteProductAPI(id);
     if (res && res.data) {
       notification.success({
         message: "Xóa thành công",
-        description: "Xóa nhãn hàng thành công",
+        description: "Xóa sản phẩm thành công",
       });
-      fetchBrand();
+      fetchProduct();
     } else {
       notification.error({
         message: "Xóa thất bại",
-        description: `Xóa nhãn hàng thất bại`,
+        description: `Xóa sản phẩm thất bại`,
       });
     }
   };
+
   const columns = [
     {
       title: "STT",
@@ -56,7 +65,7 @@ const BrandTableComponent = (props) => {
       render: (_, record, index) => index + 1 + (current - 1) * pageSize,
     },
     {
-      title: "Tên thương hiệu",
+      title: "Tên sản phẩm",
       dataIndex: "name",
       key: "name",
       width: "15%",
@@ -74,31 +83,31 @@ const BrandTableComponent = (props) => {
       ),
     },
     {
-      title: "Logo",
-      dataIndex: "logo",
-      key: "logo",
-      width: "20%",
+      title: "Ảnh",
+      dataIndex: "images",
+      key: "images",
+      width: "15%",
       align: "center",
       responsive: ["md"],
-      render: (value) => {
-        if (!value) {
+      render: (images) => {
+        if (!images || images.length === 0 || !images[0]?.name) {
           return <span>N/A</span>;
         }
-        const imageUrl = `${
-          import.meta.env.VITE_BACKEND_URL
-        }/images/logo/${value}`;
+        const imageUrl = `${import.meta.env.VITE_BACKEND_URL}/images/product/${
+          images[0].name
+        }`;
         return (
           <div
             style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              height: "60px", // Chiều cao cố định cho ô
+              height: "60px",
             }}
           >
             <Image
               src={imageUrl}
-              alt="Logo"
+              alt="Product Image"
               style={{
                 maxWidth: "80px",
                 maxHeight: "60px",
@@ -109,17 +118,17 @@ const BrandTableComponent = (props) => {
                 transition: "transform 0.2s ease",
               }}
               onError={(e) => {
-                e.target.style.display = "none"; // Ẩn ảnh lỗi
-                e.target.nextSibling.style.display = "block"; // Hiện placeholder
+                e.target.style.display = "none";
+                e.target.nextSibling.style.display = "block";
               }}
               onLoad={(e) => {
                 e.target.style.display = "block";
-                e.target.nextSibling.style.display = "none"; // Ẩn placeholder
+                e.target.nextSibling.style.display = "none";
               }}
             />
             <span
               style={{
-                display: "none", // Ẩn mặc định
+                display: "none",
                 color: "#999",
                 fontSize: "14px",
               }}
@@ -131,33 +140,29 @@ const BrandTableComponent = (props) => {
       },
     },
     {
-      title: "Email liên hệ",
-      dataIndex: "contactEmail",
-      key: "contactEmail",
-      width: "20%",
-      align: "center",
-      responsive: ["md"],
-
-      render: (email) => email || "N/A",
-    },
-    {
-      title: "Số điện thoại",
-      dataIndex: "contactPhone",
-      key: "contactPhone",
+      title: "Giá",
+      dataIndex: "price",
+      key: "price",
       width: "10%",
       align: "center",
-      responsive: ["md"],
-
-      render: (phone) => phone || "N/A",
+      render: (price) => price.toLocaleString("vi-VN") + " VNĐ" || "N/A",
+    },
+    {
+      title: "Tồn kho",
+      dataIndex: "stock",
+      key: "stock",
+      width: "10%",
+      align: "center",
+      render: (stock) => (stock >= 0 ? stock : "Hết hàng"),
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      width: "10%",
       align: "center",
       render: (_, { status }) => {
         let color, value;
-
         switch (status) {
           case "inactive":
             color = "orange";
@@ -167,7 +172,6 @@ const BrandTableComponent = (props) => {
             color = "green";
             value = "Hoạt động";
         }
-
         return (
           <Tag color={color} key={status}>
             {value.toUpperCase()}
@@ -176,9 +180,33 @@ const BrandTableComponent = (props) => {
       },
     },
     {
+      title: "Danh mục",
+      dataIndex: "category",
+      key: "category",
+      width: "15%",
+      align: "center",
+      render: (category) => category?.name || "N/A", // Giả định đã populate
+    },
+    {
+      title: "Thương hiệu",
+      dataIndex: "brand",
+      key: "brand",
+      width: "15%",
+      align: "center",
+      render: (brand) => brand?.name || "N/A", // Giả định đã populate
+    },
+    {
+      title: "Đã bán",
+      dataIndex: "sold",
+      key: "sold",
+      width: "10%",
+      align: "center",
+      render: (sold) => sold || 0,
+    },
+    {
       title: "Hành động",
       key: "action",
-      width: "5%",
+      width: "10%",
       align: "center",
       render: (_, record) => (
         <Space size="middle">
@@ -192,15 +220,17 @@ const BrandTableComponent = (props) => {
               }}
             />
             <Popconfirm
-              className="text-lg"
               title="Confirm delete"
               description="Chắc chắn xóa?"
-              onConfirm={() => deleteBrand(record._id)}
+              onConfirm={() => deleteProduct(record._id)}
               okText="Có"
               cancelText="Không"
               placement="left"
             >
-              <DeleteOutlined style={{ cursor: "pointer", color: "red" }} />
+              <DeleteOutlined
+                className="text-lg"
+                style={{ cursor: "pointer", color: "red" }}
+              />
             </Popconfirm>
           </div>
         </Space>
@@ -236,17 +266,17 @@ const BrandTableComponent = (props) => {
           },
         }}
       />
-      <BrandDetailComponent
+      <ProductDetailComponent
         openDraw={openDraw}
         setOpenDraw={setOpenDraw}
         dataDetail={dataDetail}
       />
-      <BrandUpdateFormComponent
+      <ProductUpdateFormComponent
         dataDetail={dataDetail}
         setDataDetail={setDataDetail}
         isModalUpdateOpen={isModalUpdateOpen}
         setIsModalUpdateOpen={setIsModalUpdateOpen}
-        fetchBrand={fetchBrand}
+        fetchProduct={fetchProduct}
         previewOpen={previewOpen}
         setPreviewOpen={setPreviewOpen}
         previewImage={previewImage}
@@ -255,8 +285,15 @@ const BrandTableComponent = (props) => {
         setFileList={setFileList}
         uploadProps={uploadProps}
         uploadButton={uploadButton}
+        //
+        optionCategory={optionCategory}
+        setOptionCategory={setOptionCategory}
+        optionBrand={optionBrand}
+        setOptionBrand={setOptionBrand}
+        optionDiscount={optionDiscount}
+        setOptionDiscount={setOptionDiscount}
       />
     </>
   );
 };
-export default BrandTableComponent;
+export default ProductTableComponent;

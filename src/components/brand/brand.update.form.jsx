@@ -107,7 +107,7 @@ const BrandUpdateFormComponent = (props) => {
   return (
     <>
       <Modal
-        title={<div className="text-center">Tạo thương hiệu mới</div>}
+        title={<div className="text-center">Chỉnh sửa thương hiệu</div>}
         open={isModalUpdateOpen}
         onOk={() => brandForm.submit()}
         onCancel={resetAndCloseModal}

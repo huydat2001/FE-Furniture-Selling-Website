@@ -48,7 +48,7 @@ const CategoryDetailComponent = (props) => {
                 {dataDetail.description || "N/A"}
               </Descriptions.Item>
               <Descriptions.Item label="Danh mục cha">
-                {dataDetail.parent || "Không có danh mục cha"}
+                {dataDetail.parent?.name || "Không có danh mục cha"}
               </Descriptions.Item>
               <Descriptions.Item label="Trạng thái">
                 <Tag

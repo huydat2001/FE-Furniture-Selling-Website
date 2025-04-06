@@ -13,6 +13,7 @@ import PrivateRoute from "./pages/private.route.jsx";
 import CategoryPage from "./pages/admin/category.jsx";
 import DiscountPage from "./pages/admin/discount.jsx";
 import BrandPage from "./pages/admin/brand.jsx";
+import ProductPage from "./pages/admin/product.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -69,6 +70,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <BrandPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/products",
+        element: (
+          <PrivateRoute>
+            <ProductPage />
           </PrivateRoute>
         ),
       },

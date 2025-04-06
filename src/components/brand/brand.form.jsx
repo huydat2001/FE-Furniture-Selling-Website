@@ -110,6 +110,7 @@ const BrandFormComponent = (props) => {
           initialValues={{ status: "active" }} // Giá trị mặc định
         >
           <Form.Item
+            hasFeedback
             label="Tên thương hiệu"
             name="name"
             rules={[
@@ -127,6 +128,7 @@ const BrandFormComponent = (props) => {
           </Form.Item>
 
           <Form.Item
+            hasFeedback
             label="Email liên hệ"
             name="contactEmail"
             rules={[
@@ -140,6 +142,7 @@ const BrandFormComponent = (props) => {
           </Form.Item>
 
           <Form.Item
+            hasFeedback
             label="Số điện thoại"
             name="contactPhone"
             rules={[

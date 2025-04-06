@@ -9,9 +9,10 @@ import {
 import { BsFillMenuAppFill } from "react-icons/bs";
 import { IoAnalytics } from "react-icons/io5";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaUser } from "react-icons/fa";
+import { FaProductHunt, FaUser } from "react-icons/fa";
 import { BiSolidCategory, BiSolidDiscount } from "react-icons/bi";
 import { CiDiscount1 } from "react-icons/ci";
+import { TbBrandBebo } from "react-icons/tb";
 const Navbar = (props) => {
   const [current, setCurrent] = useState("");
   const [openKeys, setOpenKeys] = useState([]);
@@ -27,6 +28,7 @@ const Navbar = (props) => {
         "analytics",
         "discounts",
         "brands",
+        "products",
       ];
       const currentRoute = allRoutes.find(
         (item) => `/${item}` === location.pathname
@@ -43,6 +45,9 @@ const Navbar = (props) => {
           setOpenKeys(["management"]);
         }
         if (currentRoute === "brands") {
+          setOpenKeys(["management"]);
+        }
+        if (currentRoute === "products") {
           setOpenKeys(["management"]);
         }
         if (currentRoute === "apps") {
@@ -83,24 +88,29 @@ const Navbar = (props) => {
       key: "management",
       children: [
         {
-          label: <Link to="/users">User</Link>,
+          label: <Link to="/users">Người dùng</Link>,
           key: "users",
           icon: <FaUser />,
         },
         {
-          label: <Link to="/categorys">Category</Link>,
+          label: <Link to="/categorys">Danh mục</Link>,
           key: "categorys",
           icon: <BiSolidCategory />,
         },
         {
-          label: <Link to="/discounts">Discount</Link>,
+          label: <Link to="/discounts">Phiếu giảm giá</Link>,
           key: "discounts",
           icon: <BiSolidDiscount />,
         },
         {
-          label: <Link to="/brands">Brand</Link>,
+          label: <Link to="/brands">Nhãn hàng</Link>,
           key: "brands",
-          icon: <BiSolidDiscount />,
+          icon: <TbBrandBebo />,
+        },
+        {
+          label: <Link to="/products">Sản phẩm</Link>,
+          key: "products",
+          icon: <FaProductHunt />,
         },
       ],
     },

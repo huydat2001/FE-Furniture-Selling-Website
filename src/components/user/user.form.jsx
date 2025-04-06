@@ -97,7 +97,6 @@ const UserFormComponent = (props) => {
       ...values,
       address: residenceLabels,
     };
-    console.log("values :>> ", values);
     const res = await createUserAPI(values);
     if (res.data) {
       notification.success({
