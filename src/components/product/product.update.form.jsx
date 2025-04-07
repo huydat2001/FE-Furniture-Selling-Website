@@ -130,7 +130,6 @@ const ProductUpdateFormComponent = (props) => {
         isFeatured,
       } = values;
       // mới
-      console.log("values :>> ", values);
       let images = [];
       const oldImages = fileList
         .filter((file) => !file.originFileObj) // Chỉ lấy ảnh cũ

@@ -19,9 +19,11 @@ const deleteProductAPI = (id) => {
   const URL_BACKEND = `/v1/api/product/${id}`;
   return axios.delete(URL_BACKEND);
 };
+const newProductAPI = () => {};
 export {
   getAllProductAPI,
   createProductAPI,
   updateProductAPI,
   deleteProductAPI,
+  newProductAPI,
 };

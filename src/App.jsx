@@ -22,6 +22,24 @@ function App() {
     fetchUserInfo();
   }, []);
   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isMobile &&
+        isSiderVisible &&
+        siderRef.current &&
+        !siderRef.current.contains(event.target)
+      ) {
+        setIsSiderVisible(false); // Đóng Sider nếu click bên ngoài
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobile, isSiderVisible]);
+  useEffect(() => {
     // Media query cho md (≥768px)
     const mobileQuery = window.matchMedia("(min-width: 768px)");
     const handleMobileQueryChange = (e) => {
@@ -57,24 +75,7 @@ function App() {
       lgQuery.removeEventListener("change", handleLgQueryChange);
     };
   }, [userToggled]);
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        isMobile &&
-        isSiderVisible &&
-        siderRef.current &&
-        !siderRef.current.contains(event.target)
-      ) {
-        setIsSiderVisible(false); // Đóng Sider nếu click bên ngoài
-      }
-    };
 
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isMobile, isSiderVisible]);
   const delay = (milSeconds) => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -84,12 +85,15 @@ function App() {
   };
   const fetchUserInfo = async () => {
     const res = await getAccountAPI();
+    console.log("res :>> ", res);
     await delay(0);
     if (res.data) {
       setUser(res.data);
     }
     setIsAppLoading(false);
   };
+  console.log("user app:>> ", user);
+
   return (
     <>
       {isAppLoading === true ? (

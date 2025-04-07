@@ -19,7 +19,6 @@ const CategoryTableComponent = (props) => {
     loading,
     fetchCategory,
   } = props;
-  console.log("data :>> ", data);
 
   const deleteCategory = async (id) => {
     const res = await deleteCategoryAPI(id);

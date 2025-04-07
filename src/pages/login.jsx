@@ -9,7 +9,7 @@ import {
 } from "antd";
 import { loginAPI } from "../services/login";
 import { useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/auth.context";
 
 const { Title, Text } = Typography;
@@ -19,7 +19,18 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
   const { user, setUser } = useContext(AuthContext);
-
+  // Theo dõi user và chuyển hướng khi user thay đổi
+  useEffect(() => {
+    if (user && user._id) {
+      // Đã đăng nhập thành công
+      if (user.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    }
+  }, [user, navigate]);
+  console.log("user effect :>> ", user);
   const onFinish = async (values) => {
     setLoading(true);
     const res = await loginAPI(values);
@@ -30,7 +41,7 @@ const LoginPage = () => {
       });
       localStorage.setItem("access_token", res.accessToken);
       setUser(res.data);
-      navigate("/");
+      console.log("user login :>> ", user);
     } else {
       notification.error({
         message: "Lỗi Đăng nhập",

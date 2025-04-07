@@ -14,7 +14,6 @@ const handleUploadFile = (file, folder) => {
   return axios.post(URL_BACKEND, bodyFormData, config);
 };
 const handleUploadFileMultiple = (files, folder) => {
-  console.log("file :>> ", files);
   const URL_BACKEND = `/v1/api/uploadmultiple`;
   let config = {
     headers: {

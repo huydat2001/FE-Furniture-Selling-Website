@@ -14,15 +14,16 @@ import CategoryPage from "./pages/admin/category.jsx";
 import DiscountPage from "./pages/admin/discount.jsx";
 import BrandPage from "./pages/admin/brand.jsx";
 import ProductPage from "./pages/admin/product.jsx";
+import UserLayout from "./pages/user/UserLayout.jsx";
+import UserProductPage from "./pages/user/user.product.jsx";
+import HomePage from "./pages/user/homepage.user.jsx";
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/admin",
     element: (
       // <PrivateRoute>
       <App />
     ),
-    // </PrivateRoute>
-
     errorElement: <ErrorPage />,
     children: [
       {
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/apps",
+        path: "apps",
         element: (
           <PrivateRoute>
             <AppPage />
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/users",
+        path: "users",
         element: (
           <PrivateRoute>
             <UserPage />
@@ -50,7 +51,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/categorys",
+        path: "categorys",
         element: (
           <PrivateRoute>
             <CategoryPage />
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/discounts",
+        path: "discounts",
         element: (
           <PrivateRoute>
             <DiscountPage />
@@ -66,7 +67,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/brands",
+        path: "brands",
         element: (
           <PrivateRoute>
             <BrandPage />
@@ -74,13 +75,23 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/products",
+        path: "products",
         element: (
           <PrivateRoute>
             <ProductPage />
           </PrivateRoute>
         ),
       },
+    ],
+  },
+  {
+    path: "/",
+    element: <UserLayout />,
+    errorElement: <ErrorPage />,
+
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "product", element: <UserProductPage /> },
     ],
   },
   {
