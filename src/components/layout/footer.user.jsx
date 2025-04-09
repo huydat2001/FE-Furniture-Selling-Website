@@ -52,11 +52,7 @@ const FooterUser = () => {
             </p>
             <div className="mt-4">
               <a href="http://online.gov.vn/Home/WebDetails/123273">
-                <img
-                  src="/logoSaleNoti.png.crdownload"
-                  alt="DMCA"
-                  className="h-20"
-                />
+                <img src="/logoSaleNoti.png" alt="DMCA" className="h-20" />
               </a>
               <img
                 src="/MUJI_logo.svg.png"

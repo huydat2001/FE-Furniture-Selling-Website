@@ -1,10 +1,18 @@
 import axios from "./axios.customize";
-const getAllDiscountAPI = (current, pageSize) => {
-  let URL_BACKEND = "";
-  if ((current, pageSize)) {
-    URL_BACKEND = `/v1/api/discount?page=${current}&limit=${pageSize}`;
+const getAllDiscountAPI = (current, pageSize, filter = {}) => {
+  let params = new URLSearchParams();
+
+  // Thêm phân trang
+  if (current && pageSize) {
+    params.append("page", current);
+    params.append("limit", pageSize);
   }
-  URL_BACKEND = `/v1/api/discount`;
+
+  // Thêm filter
+  if (filter.status) {
+    params.append("status", filter.status);
+  }
+  let URL_BACKEND = `/v1/api/discount?${params.toString()}`;
   return axios.get(URL_BACKEND);
 };
 const createDiscountAPI = (value) => {

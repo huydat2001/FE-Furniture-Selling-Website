@@ -28,11 +28,12 @@ const ProductTableComponent = (props) => {
     uploadButton,
     //
     optionCategory,
-    setOptionCategory,
     optionBrand,
-    setOptionBrand,
     optionDiscount,
-    setOptionDiscount,
+    //
+    getBrand,
+    getCategory,
+    getDiscount,
   } = props;
 
   const onChange = (pagination) => {
@@ -287,11 +288,12 @@ const ProductTableComponent = (props) => {
         uploadButton={uploadButton}
         //
         optionCategory={optionCategory}
-        setOptionCategory={setOptionCategory}
         optionBrand={optionBrand}
-        setOptionBrand={setOptionBrand}
         optionDiscount={optionDiscount}
-        setOptionDiscount={setOptionDiscount}
+        //
+        getBrand={getBrand}
+        getCategory={getCategory}
+        getDiscount={getDiscount}
       />
     </>
   );

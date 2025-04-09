@@ -13,6 +13,9 @@ import { useEffect, useState } from "react";
 import ProductTableComponent from "../../components/product/product.table";
 import { getAllProductAPI } from "../../services/api.service.product";
 import { PlusOutlined } from "@ant-design/icons";
+import { getAllCategoryAPI } from "../../services/api.service.category";
+import { getAllBrandAPI } from "../../services/api.service.brand";
+import { getAllDiscountAPI } from "../../services/api.serivice.discount";
 const { Title } = Typography;
 var __awaiter =
   (this && this.__awaiter) ||
@@ -83,6 +86,43 @@ const ProductPage = () => {
   useEffect(() => {
     fetchProduct();
   }, [current, pageSize]);
+  const filter = { status: "active" };
+  const getCategory = async () => {
+    const res = await getAllCategoryAPI(null, null, filter);
+    const options = res.data.result
+      .map((category) => ({
+        value: category._id,
+        label: category.name,
+      }))
+      .sort((a, b) =>
+        a.label.localeCompare(b.label, "vi", { sensitivity: "base" })
+      );
+    setOptionCategory(options);
+  };
+  const getBrand = async () => {
+    const res = await getAllBrandAPI(null, null, filter);
+    const options = res.data.result
+      .map((brand) => ({
+        value: brand._id,
+        label: brand.name,
+      }))
+      .sort((a, b) =>
+        a.label.localeCompare(b.label, "vi", { sensitivity: "base" })
+      );
+    setOptionBrand(options);
+  };
+  const getDiscount = async () => {
+    const res = await getAllDiscountAPI(null, null, filter);
+    const options = res.data.result
+      .map((dis) => ({
+        value: dis._id,
+        label: dis.code,
+      }))
+      .sort((a, b) =>
+        a.label.localeCompare(b.label, "vi", { sensitivity: "base" })
+      );
+    setOptionDiscount(options);
+  };
   const fetchProduct = async () => {
     const res = await getAllProductAPI(current, pageSize);
     if (res.data) {
@@ -183,11 +223,12 @@ const ProductPage = () => {
                   uploadButton={uploadButton}
                   //
                   optionCategory={optionCategory}
-                  setOptionCategory={setOptionCategory}
                   optionBrand={optionBrand}
-                  setOptionBrand={setOptionBrand}
                   optionDiscount={optionDiscount}
-                  setOptionDiscount={setOptionDiscount}
+                  //
+                  getBrand={getBrand}
+                  getCategory={getCategory}
+                  getDiscount={getDiscount}
                 />
               </Card>
             </Col>
@@ -221,11 +262,12 @@ const ProductPage = () => {
                 uploadButton={uploadButton}
                 //
                 optionCategory={optionCategory}
-                setOptionCategory={setOptionCategory}
                 optionBrand={optionBrand}
-                setOptionBrand={setOptionBrand}
                 optionDiscount={optionDiscount}
-                setOptionDiscount={setOptionDiscount}
+                filter={filter}
+                getBrand={getBrand}
+                getCategory={getCategory}
+                getDiscount={getDiscount}
               />
             </Card>
           </Col>

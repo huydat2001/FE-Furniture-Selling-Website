@@ -140,6 +140,9 @@ const ProductDetailComponent = (props) => {
                     ? dataDetail.price.toLocaleString("vi-VN") + " VNĐ"
                     : "N/A"}
                 </Descriptions.Item>
+                <Descriptions.Item label="% giảm ban đầu">
+                  {dataDetail.decreases ? dataDetail.decreases + "%" : "N/A"}
+                </Descriptions.Item>
                 <Descriptions.Item label="Tồn kho">
                   {dataDetail.stock >= 0 ? dataDetail.stock : "N/A"}
                 </Descriptions.Item>
@@ -210,7 +213,29 @@ const ProductDetailComponent = (props) => {
                   {dataDetail.material || "N/A"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Màu sắc">
-                  {dataDetail.color || "N/A"}
+                  {dataDetail.color?.length > 0
+                    ? dataDetail.color.map((c, i) => {
+                        // Chuyển đổi màu tiếng Việt thành màu hợp lệ cho Ant Design Tag
+                        let tagColor = c;
+                        if (c.toLowerCase() === "đỏ") tagColor = "red";
+                        else if (c.toLowerCase() === "xanh") tagColor = "blue";
+                        else if (c.toLowerCase() === "vàng")
+                          tagColor = "yellow";
+                        else if (c.toLowerCase() === "trắng")
+                          tagColor = "white";
+                        else if (c.toLowerCase() === "đen") tagColor = "black";
+                        else if (c.toLowerCase() === "xám") tagColor = "gray";
+                        else if (c.toLowerCase() === "tím")
+                          tagColor = "magenta";
+                        // Nếu không khớp với màu nào, để tagColor là giá trị gốc (có thể không hiển thị màu)
+
+                        return (
+                          <Tag key={i} color={tagColor}>
+                            {c}
+                          </Tag>
+                        );
+                      })
+                    : "N/A"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Nổi bật">
                   <Tag color={dataDetail.isFeatured ? "gold" : "gray"}>

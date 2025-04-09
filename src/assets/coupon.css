@@ -1,0 +1,137 @@
+.coupon-section {
+  padding: 20px;
+  background: #fff;
+}
+
+.coupon-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.coupon-container {
+  background: #e6f7e9; /* Màu xanh nhạt như trong hình */
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.coupon-slide {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.coupon-group {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.coupon-card {
+  background: linear-gradient(135deg, #7158fe, #9d4de6);
+  color: #fff;
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 300px;
+  max-width: 100%;
+}
+
+.coupon-card h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.coupon-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.cpn-code {
+  border: 2px dashed #fff;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cpn-btn {
+  background: #fff;
+  border: 2px solid #fff;
+  padding: 0.6rem 1rem;
+  color: #7158fe;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border-radius: 5px;
+}
+
+.cpn-btn.copied {
+  background: #4caf50;
+  border-color: #4caf50;
+  color: white;
+}
+
+.cpn-btn:hover {
+  opacity: 0.9;
+}
+
+.valid-date {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.circle1,
+.circle2 {
+  background: #e6f7e9;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.circle1 {
+  left: -15px;
+}
+
+.circle2 {
+  right: -15px;
+}
+
+.no-coupons {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+@media (max-width: 1024px) {
+  .coupon-group {
+    gap: 15px;
+  }
+
+  .coupon-card {
+    width: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .coupon-group {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .coupon-card {
+    width: 100%;
+    max-width: 300px;
+  }
+}

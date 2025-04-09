@@ -85,14 +85,12 @@ function App() {
   };
   const fetchUserInfo = async () => {
     const res = await getAccountAPI();
-    console.log("res :>> ", res);
     await delay(0);
     if (res.data) {
       setUser(res.data);
     }
     setIsAppLoading(false);
   };
-  console.log("user app:>> ", user);
 
   return (
     <>

@@ -1,10 +1,18 @@
 import axios from "./axios.customize";
-const getAllCategoryAPI = (current, pageSize) => {
-  let URL_BACKEND = "";
-  if ((current, pageSize)) {
-    URL_BACKEND = `/v1/api/category?page=${current}&limit=${pageSize}`;
+const getAllCategoryAPI = (current, pageSize, filter = {}) => {
+  let params = new URLSearchParams();
+
+  // Thêm phân trang
+  if (current && pageSize) {
+    params.append("page", current);
+    params.append("limit", pageSize);
   }
-  URL_BACKEND = `/v1/api/category`;
+
+  // Thêm filter
+  if (filter.status) {
+    params.append("status", filter.status);
+  }
+  let URL_BACKEND = `/v1/api/category?${params.toString()}`;
   return axios.get(URL_BACKEND);
 };
 const createCategoryAPI = (value) => {

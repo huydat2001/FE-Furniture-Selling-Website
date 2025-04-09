@@ -22,7 +22,7 @@ const CategoryFormComponent = (props) => {
   const [optionCategory, setOptionCategory] = useState([]);
   useEffect(() => {
     getCategory();
-  }, []);
+  }, [fetchCategory]);
   const { Option } = Select;
 
   const getCategory = async () => {
