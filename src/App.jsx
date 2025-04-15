@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from "react";
 import { useRef } from "react";
 import { AuthContext } from "./contexts/auth.context";
 import { getAccountAPI } from "./services/login";
+import ScrollToTop from "./components/until/scrolltotop";
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
@@ -100,6 +101,8 @@ function App() {
         </Row>
       ) : (
         <>
+          <ScrollToTop />
+
           <Layout className="min-h-screen">
             {/* {user && user._id && ( */}
             <Sider

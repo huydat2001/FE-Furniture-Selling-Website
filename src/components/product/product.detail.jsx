@@ -3,11 +3,13 @@ import {
   Descriptions,
   Drawer,
   Image,
+  notification,
   Spin,
   Tag,
   Typography,
 } from "antd";
 import { useState } from "react";
+import { addToCartAPI } from "../../services/api.sevice.cart";
 const { Title, Text } = Typography;
 const ProductDetailComponent = (props) => {
   const [errorImages, setErrorImages] = useState({});
@@ -17,6 +19,7 @@ const ProductDetailComponent = (props) => {
     if (!images || images.length === 0) {
       return <Text type="secondary">Không có hình ảnh</Text>;
     }
+
     return (
       <Carousel
         autoplay={{ dotDuration: true }}

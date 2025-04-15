@@ -21,7 +21,7 @@ const deleteProductAPI = (id) => {
 };
 const getProductByQuyeryAPI = (current, pageSize, filters = {}) => {
   let URL_BACKEND = `/v1/api/user/product?page=${current}&limit=${pageSize}`;
-  const { search, minPrice, maxPrice, rating, populate, sortBy, order } =
+  const { search, minPrice, maxPrice, rating, populate, sortBy, order, name } =
     filters;
   if (search) URL_BACKEND += `&search=${encodeURIComponent(search)}`;
   if (minPrice) URL_BACKEND += `&minPrice=${minPrice}`;
@@ -29,6 +29,7 @@ const getProductByQuyeryAPI = (current, pageSize, filters = {}) => {
   if (rating) URL_BACKEND += `&rating=${rating}`;
   if (populate) URL_BACKEND += `&populate=${populate}`;
   if (sortBy && order) URL_BACKEND += `&sortBy=${sortBy}&order=${order}`;
+  if (name) URL_BACKEND += `&name=${name}`;
   return axios.get(URL_BACKEND);
 };
 export {

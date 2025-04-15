@@ -8,6 +8,7 @@ import {
   MdOutlineWhatshot,
 } from "react-icons/md";
 import { getAllCategoryAPI } from "../../services/api.service.category";
+import { Link } from "react-router-dom";
 
 const fontstyle = {
   fontSize: "18px",
@@ -54,7 +55,7 @@ const MenuUserComponent = () => {
     // Tạo danh sách items cho menu
     const dynamicItems = [
       {
-        label: "Trang chủ",
+        label: <Link to="/">Trang chủ</Link>,
         key: "home",
         icon: <HomeOutlined style={fontstyle} />,
       },

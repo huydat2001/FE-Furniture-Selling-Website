@@ -41,7 +41,6 @@ const LoginPage = () => {
       });
       localStorage.setItem("access_token", res.accessToken);
       setUser(res.data);
-      console.log("user login :>> ", user);
     } else {
       notification.error({
         message: "Lỗi Đăng nhập",

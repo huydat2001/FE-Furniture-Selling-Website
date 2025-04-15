@@ -17,6 +17,8 @@ import ProductPage from "./pages/admin/product.jsx";
 import UserLayout from "./pages/user/UserLayout.jsx";
 import UserProductPage from "./pages/user/user.product.jsx";
 import HomePage from "./pages/user/homepage.user.jsx";
+import ScrollToTop from "./components/until/scrolltotop.jsx";
+import { CartProvider } from "./contexts/cart.context.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -91,7 +93,7 @@ const router = createBrowserRouter([
 
     children: [
       { index: true, element: <HomePage /> },
-      { path: "product", element: <UserProductPage /> },
+      { path: "product/:name", element: <UserProductPage /> },
     ],
   },
   {
@@ -101,6 +103,8 @@ const router = createBrowserRouter([
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
   <AuthWrapper>
-    <RouterProvider router={router} />
+    <CartProvider>
+      <RouterProvider router={router} />
+    </CartProvider>
   </AuthWrapper>
 );
