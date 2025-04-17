@@ -64,7 +64,7 @@ const UserLayout = () => {
         )}
         {/* Nội dung chính */}
         <Content
-          className="min-h-screen w-[90vw] xl:w-[70vw] mx-auto"
+          className="min-h-screen w-[95vw] xl:w-[75vw] mx-auto"
           style={{
             padding: "16px 24px",
             background: "#fff",

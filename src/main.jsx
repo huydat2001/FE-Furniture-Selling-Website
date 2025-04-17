@@ -19,6 +19,7 @@ import UserProductPage from "./pages/user/user.product.jsx";
 import HomePage from "./pages/user/homepage.user.jsx";
 import ScrollToTop from "./components/until/scrolltotop.jsx";
 import { CartProvider } from "./contexts/cart.context.jsx";
+import CheckoutPage from "./pages/user/checkout.user.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -93,7 +94,18 @@ const router = createBrowserRouter([
 
     children: [
       { index: true, element: <HomePage /> },
-      { path: "product/:name", element: <UserProductPage /> },
+      {
+        path: "product/:name",
+        element: <UserProductPage />,
+      },
+      {
+        path: "checkout",
+        element: <CheckoutPage />,
+      },
+      {
+        path: "checkout/:id",
+        element: <CheckoutPage />,
+      },
     ],
   },
   {

@@ -1,5 +1,6 @@
+// file: user.product.jsx
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getProductByQuyeryAPI } from "../../services/api.service.product";
 import {
   Button,
@@ -11,22 +12,22 @@ import {
   Carousel,
   Tabs,
 } from "antd";
-import { ShoppingCartOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { CiCircleInfo } from "react-icons/ci";
 import { MdOutlinePolicy, MdOutlineRateReview } from "react-icons/md";
 import "../../assets/product.css";
-import { useCart } from "../../contexts/cart.context"; // Import useCart
+import { useCart } from "../../contexts/cart.context";
 
 const UserProductPage = () => {
   const { name } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [count, setCount] = useState(1); // Bắt đầu từ 1 thay vì 0
-  const [selectedColor, setSelectedColor] = useState(null); // Quản lý màu được chọn
+  const [count, setCount] = useState(1);
+  const [selectedColor, setSelectedColor] = useState(null);
   const carouselRef = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { addToCart } = useCart(); // Lấy addToCart từ context
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   const increment = () => {
     if (product.stock !== 0 && count < product.stock) {
@@ -35,7 +36,7 @@ const UserProductPage = () => {
   };
 
   const decrement = () => {
-    setCount((prevCount) => (prevCount > 1 ? prevCount - 1 : 1)); // Đảm bảo số lượng không nhỏ hơn 1
+    setCount((prevCount) => (prevCount > 1 ? prevCount - 1 : 1));
   };
 
   useEffect(() => {
@@ -56,15 +57,15 @@ const UserProductPage = () => {
         throw new Error("Sản phẩm không tồn tại");
       }
 
-      const price = productData.price.toLocaleString("vi-VN", {
+      const price = productData.price;
+      const formattedPrice = productData.price.toLocaleString("vi-VN", {
         style: "currency",
         currency: "VND",
       });
 
-      const discountedPrice = (
-        productData.price -
-        productData.price * (productData.decreases / 100 || 0)
-      ).toLocaleString("vi-VN", {
+      const discountedPrice =
+        price - (price * (productData.decreases || 0)) / 100;
+      const formattedDiscountedPrice = discountedPrice.toLocaleString("vi-VN", {
         style: "currency",
         currency: "VND",
       });
@@ -80,8 +81,10 @@ const UserProductPage = () => {
       setProduct({
         id: productData._id,
         name: productData.name,
-        price,
-        discountedPrice,
+        price: formattedPrice,
+        rawPrice: price, // Giá gốc để tính toán
+        discountedPrice: formattedDiscountedPrice,
+        rawDiscountedPrice: discountedPrice, // Giá sau giảm để tính toán
         decreases: productData.decreases,
         rating: productData.ratings || 0,
         reviews: productData.reviews?.length || 0,
@@ -97,7 +100,6 @@ const UserProductPage = () => {
         material: productData.material || "Chưa có chất liệu",
       });
 
-      // Đặt màu mặc định (nếu có)
       if (productData.color?.length > 0) {
         setSelectedColor(productData.color[0]);
       }
@@ -145,13 +147,45 @@ const UserProductPage = () => {
         count,
         selectedColor
       );
-      // Thông báo thành công đã được xử lý trong useCart
     } catch (error) {
       notification.error({
         message: "Lỗi thêm vào giỏ hàng",
         description: error.message || "Đã có lỗi xảy ra",
       });
     }
+  };
+
+  const handleBuyNow = () => {
+    if (product.stock === 0) {
+      notification.error({
+        message: "Hết hàng",
+        description: `${product.name} hiện đã hết hàng!`,
+      });
+      return;
+    }
+
+    if (!selectedColor && product.color.length > 0) {
+      notification.error({
+        message: "Chưa chọn màu",
+        description: "Vui lòng chọn màu trước khi mua ngay!",
+      });
+      return;
+    }
+
+    // Lưu thông tin sản phẩm vào localStorage
+    const buyNowProduct = {
+      id: product.id,
+      name: product.name,
+      rawPrice: product.rawPrice,
+      rawDiscountedPrice: product.rawDiscountedPrice,
+      quantity: count,
+      color: selectedColor,
+      image: product.images[0],
+    };
+    localStorage.setItem("buyNowProduct", JSON.stringify(buyNowProduct));
+
+    // Chuyển hướng đến /checkout/:id
+    navigate(`/checkout/${product.id}`);
   };
 
   if (loading) {
@@ -391,7 +425,7 @@ const UserProductPage = () => {
               className="w-40 h-12 font-semibold rounded-md btn-pay"
               variant="solid"
               color="primary"
-              onClick={() => console.log("Mua ngay", product.id)}
+              onClick={handleBuyNow}
             >
               MUA NGAY
               <span>CẢM ƠN QUÝ KHÁCH</span>
