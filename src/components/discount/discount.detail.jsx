@@ -78,6 +78,11 @@ const DiscountDetailComponent = (props) => {
                     : `${dataDetail.value.toLocaleString()} VNĐ`
                   : "N/A"}
               </Descriptions.Item>
+              <Descriptions.Item label="Giảm tối đa">
+                {dataDetail.maxDiscountAmount
+                  ? `${dataDetail.maxDiscountAmount.toLocaleString()} VNĐ`
+                  : "N/A"}
+              </Descriptions.Item>
               <Descriptions.Item label="Ngày bắt đầu">
                 {dataDetail.startDate
                   ? new Date(dataDetail.startDate).toLocaleString("vi-VN")
@@ -104,10 +109,9 @@ const DiscountDetailComponent = (props) => {
                   : "0 VNĐ"}
               </Descriptions.Item>
               <Descriptions.Item label="Sản phẩm áp dụng">
-                {dataDetail.applicableProducts &&
-                dataDetail.applicableProducts.length > 0
-                  ? dataDetail.applicableProducts.join(", ")
-                  : "Không có"}
+                {dataDetail.applicableProducts?.length
+                  ? dataDetail.applicableProducts.map((p) => p.name).join(", ")
+                  : "Tất cả"}
               </Descriptions.Item>
               <Descriptions.Item label="Áp dụng cho tất cả">
                 {dataDetail.isApplicableToAll ? "Có" : "Không"}

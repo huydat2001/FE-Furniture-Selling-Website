@@ -20,6 +20,11 @@ const DiscountTableComponent = (props) => {
     fetchDiscount,
     setCheck,
     check,
+    checkType,
+    setCheckType,
+    getProduct,
+    optionProduct,
+    setOptionProduct,
   } = props;
   const onChange = (pagination) => {
     setCurrent(pagination.current);
@@ -196,6 +201,11 @@ const DiscountTableComponent = (props) => {
         fetchDiscount={fetchDiscount}
         check={check}
         setCheck={setCheck}
+        checkType={checkType}
+        setCheckType={setCheckType}
+        getProduct={getProduct}
+        optionProduct={optionProduct}
+        setOptionProduct={setOptionProduct}
       />
     </>
   );

@@ -10,18 +10,30 @@ import {
   Select,
   Switch,
 } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createDiscountAPI } from "../../services/api.serivice.discount";
 const { RangePicker } = DatePicker;
 const DiscountFormComponent = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { fetchDiscount, check, setCheck } = props;
+  const {
+    fetchDiscount,
+    check,
+    setCheck,
+    checkType,
+    setCheckType,
+    getProduct,
+    optionProduct,
+    setOptionProduct,
+  } = props;
   const [discountForm] = Form.useForm();
   const { Option } = Select;
   const resetAndCloseModal = () => {
     discountForm.resetFields();
     setIsModalOpen(false);
   };
+  useEffect(() => {
+    getProduct();
+  }, [setOptionProduct]);
   const handleSubmitBtn = async (values) => {
     const {
       code,
@@ -31,7 +43,9 @@ const DiscountFormComponent = (props) => {
       status,
       type,
       value,
+      applicableProducts,
       dateRange, // Lấy dateRange từ values
+      maxDiscountAmount,
     } = values;
     const startDate =
       dateRange && dateRange[0] ? dateRange[0].toISOString() : undefined;
@@ -47,6 +61,8 @@ const DiscountFormComponent = (props) => {
       value,
       startDate,
       endDate,
+      applicableProducts,
+      maxDiscountAmount,
     };
     const res = await createDiscountAPI(newValues);
     if (res.data) {
@@ -74,10 +90,7 @@ const DiscountFormComponent = (props) => {
       });
     }
   };
-  const productOptions = [
-    { value: "67ea06f38dfe9b816d40e5ef", label: "Sản phẩm A" },
-    { value: "67ea06f38dfe9b816d40e5f0", label: "Sản phẩm B" },
-  ];
+
   return (
     <>
       <Button
@@ -101,7 +114,7 @@ const DiscountFormComponent = (props) => {
       >
         <Form
           form={discountForm}
-          name="discountForm"
+          name="createForm"
           labelCol={{ span: 7 }}
           wrapperCol={{ span: 17 }}
           style={{ maxWidth: 800 }}
@@ -131,7 +144,10 @@ const DiscountFormComponent = (props) => {
             rules={[{ required: true, message: "Vui lòng chọn loại giảm giá" }]}
             initialValue="percentage"
           >
-            <Select placeholder="Chọn loại giảm giá">
+            <Select
+              placeholder="Chọn loại giảm giá"
+              onChange={(value) => setCheckType(value === "percentage")}
+            >
               <Option value="percentage">Phần trăm</Option>
               <Option value="fixed">Cố định</Option>
             </Select>
@@ -159,7 +175,32 @@ const DiscountFormComponent = (props) => {
               parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
             />
           </Form.Item>
-
+          {/* Giá trị giảm tôi đa*/}
+          <Form.Item
+            label="Giảm tối đa"
+            name="maxDiscountAmount"
+            rules={[
+              {
+                required: checkType,
+                message: "Giá trị giảm tối đa không được để trống",
+              },
+              {
+                type: "number",
+                min: 0,
+                message: "Giá trị giảm phải lớn hơn hoặc bằng 0",
+              },
+            ]}
+          >
+            <InputNumber
+              disabled={!checkType}
+              style={{ width: "100%" }}
+              placeholder="Nhập giá trị giảm tối đa"
+              formatter={(value) =>
+                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              }
+              parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+            />
+          </Form.Item>
           {/* Thời gian áp dụng */}
           <Form.Item
             label="Thời gian"
@@ -246,8 +287,9 @@ const DiscountFormComponent = (props) => {
           >
             <Select
               mode="multiple"
+              placeholder="Chọn sản phẩm"
               allowClear
-              options={productOptions}
+              options={optionProduct}
               showSearch
               disabled={check}
               filterOption={(input, option) =>
@@ -255,6 +297,7 @@ const DiscountFormComponent = (props) => {
                   .toLowerCase()
                   .includes(input.toLowerCase())
               }
+              notFoundContent="Không tìm thấy sản phẩm"
             ></Select>
           </Form.Item>
 
