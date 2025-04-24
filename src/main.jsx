@@ -20,6 +20,7 @@ import HomePage from "./pages/user/homepage.user.jsx";
 import ScrollToTop from "./components/until/scrolltotop.jsx";
 import { CartProvider } from "./contexts/cart.context.jsx";
 import CheckoutPage from "./pages/user/checkout.user.jsx";
+import VNPayReturnPage from "./components/checkout/vnpay.returnpage.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -107,6 +108,10 @@ const router = createBrowserRouter([
         element: <CheckoutPage />,
       },
     ],
+  },
+  {
+    path: "vnpay_return",
+    element: <VNPayReturnPage />,
   },
   {
     path: "/login",

@@ -8,9 +8,10 @@ import {
   Row,
   Button,
   notification,
+  Modal,
 } from "antd";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   getDistrictAPI,
   getProvinceAPI,
@@ -18,6 +19,10 @@ import {
 } from "../../services/address/api.address";
 import { CreateQRCodeAPI } from "../../services/VietQR/api.qrcode";
 import { useCart } from "../../contexts/cart.context";
+import {
+  CreateVNPAYAPI,
+  ReturnVNPAYAPI,
+} from "../../services/VietQR/api.vnpay";
 
 // Component hiển thị danh sách sản phẩm (giỏ hàng hoặc sản phẩm "MUA NGAY")
 const OrderItems = ({ items, totalPrice }) => {
@@ -88,7 +93,7 @@ const CheckoutPage = () => {
   const { id } = useParams(); // Lấy id từ URL
   const [checkoutItems, setCheckoutItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
@@ -218,36 +223,53 @@ const CheckoutPage = () => {
     }
   };
 
-  const onFinish = (values) => {
-    const orderData = {
-      ...values,
-      address: residenceLabels.join(", "),
-      totalPrice: totalPrice,
-      paymentMethod: selectedPaymentMethod,
-      items: checkoutItems,
-      createdAt: new Date().toISOString(),
-    };
+  const onFinish = async (values) => {
+    try {
+      const orderData = {
+        ...values,
+        address: residenceLabels.join(", "),
+        totalPrice: totalPrice,
+        paymentMethod: selectedPaymentMethod,
+        items: checkoutItems,
+        createdAt: new Date().toISOString(),
+      };
+      if (selectedPaymentMethod !== "vnpay") {
+        console.log("Thông tin đặt hàng:", orderData);
+        notification.success({
+          message: "Đặt hàng thành công",
+          description:
+            "Cảm ơn bạn đã đặt hàng! Chúng tôi sẽ liên hệ với bạn sớm.",
+        });
+        if (id) {
+          localStorage.removeItem("buyNowProduct"); // Xóa sản phẩm "MUA NGAY"
+        } else {
+          clearCart(); // xóa giỏ hàng
+        }
 
-    console.log("Thông tin đặt hàng:", orderData);
+        form.resetFields();
+        setResidenceLabels([]);
+        setSelectedPaymentMethod("cod");
+        setQrCodeData(null);
+        setCheckoutItems([]);
+        setTotalPrice(0);
+        navigate("/");
+        return;
+      }
+      // Xóa dữ liệu sau khi đặt hàng thành công
 
-    notification.success({
-      message: "Đặt hàng thành công",
-      description: "Cảm ơn bạn đã đặt hàng! Chúng tôi sẽ liên hệ với bạn sớm.",
-    });
-
-    // Xóa dữ liệu sau khi đặt hàng thành công
-    if (id) {
-      localStorage.removeItem("buyNowProduct"); // Xóa sản phẩm "MUA NGAY"
-    } else {
-      clearCart(); // Xóa giỏ hàng
+      const data = {
+        amount: totalPrice,
+        bankCode: "",
+      };
+      const res = await CreateVNPAYAPI(data);
+      window.location.href = res.data.paymentUrl;
+    } catch (error) {
+      console.error("Error creating VNPAY payment:", error);
+      notification.error({
+        message: "Lỗi thanh toán",
+        description: "Có lỗi xảy ra khi tạo thanh toán VNPAY.",
+      });
     }
-
-    form.resetFields();
-    setResidenceLabels([]);
-    setSelectedPaymentMethod("cod");
-    setQrCodeData(null);
-    setCheckoutItems([]);
-    setTotalPrice(0);
   };
 
   const onFinishFailed = (errorInfo) => {
