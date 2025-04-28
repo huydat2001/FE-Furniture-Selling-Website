@@ -1,4 +1,3 @@
-// file: checkout.user.jsx
 import {
   Cascader,
   Col,
@@ -23,65 +22,11 @@ import {
   CreateVNPAYAPI,
   ReturnVNPAYAPI,
 } from "../../services/VietQR/api.vnpay";
-
-// Component hiển thị danh sách sản phẩm (giỏ hàng hoặc sản phẩm "MUA NGAY")
-const OrderItems = ({ items, totalPrice }) => {
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-gray-700 mb-6">
-        Thông Tin Đơn Hàng
-      </h2>
-      {items && items.length > 0 ? (
-        <>
-          {items.map((item, index) => (
-            <Row
-              key={item.id || index}
-              gutter={[12, 12]}
-              className="mb-4 border-b pb-4"
-            >
-              <Col span={6}>
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-20 object-cover rounded-md"
-                />
-              </Col>
-              <Col span={18}>
-                <p className="font-semibold text-gray-700">{item.name}</p>
-                <p className="text-gray-500">
-                  Màu sắc: {item.color || "Chưa chọn"}
-                </p>
-                <p className="text-gray-500">Số lượng: {item.quantity}</p>
-                <p className="text-red-500 font-semibold">
-                  {(item.rawDiscountedPrice * item.quantity).toLocaleString(
-                    "vi-VN",
-                    {
-                      style: "currency",
-                      currency: "VND",
-                    }
-                  )}
-                </p>
-              </Col>
-            </Row>
-          ))}
-          <div className="flex justify-between py-3 border-t border-gray-200">
-            <span className="font-semibold text-gray-700">Tổng tiền:</span>
-            <span className="font-semibold text-red-500">
-              {totalPrice.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-            </span>
-          </div>
-        </>
-      ) : (
-        <p className="text-gray-500 text-center">
-          Không có sản phẩm nào trong đơn hàng.
-        </p>
-      )}
-    </div>
-  );
-};
+import {
+  getAllDiscountAPI,
+  updateDiscountAPI,
+} from "../../services/api.serivice.discount";
+import { ArrowRightOutlined } from "@ant-design/icons";
 
 const CheckoutPage = () => {
   const [form] = Form.useForm();
@@ -92,8 +37,13 @@ const CheckoutPage = () => {
   const { cart, totalPrice: cartTotalPrice, clearCart } = useCart();
   const { id } = useParams(); // Lấy id từ URL
   const [checkoutItems, setCheckoutItems] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
+  const [originalTotalPrice, setOriginalTotalPrice] = useState(0); // Giá trị gốc của đơn hàng
+  const [totalPrice, setTotalPrice] = useState(0); // Giá trị sau khi áp dụng giảm giá
+  const [code, setCode] = useState(""); // Lưu mã phiếu giảm giá từ input
+  const [discount, setDiscount] = useState(null); // Lưu thông tin phiếu giảm giá (nếu hợp lệ)
+  const [discountAmount, setDiscountAmount] = useState(0); // Lưu giá trị giảm giá
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
@@ -112,21 +62,20 @@ const CheckoutPage = () => {
   }, []);
 
   useEffect(() => {
-    // Kiểm tra nếu có id (tức là từ "MUA NGAY")
     if (id) {
       const buyNowProduct = JSON.parse(localStorage.getItem("buyNowProduct"));
       if (buyNowProduct && buyNowProduct.id === id) {
         setCheckoutItems([buyNowProduct]);
-        setTotalPrice(
-          buyNowProduct.rawDiscountedPrice * buyNowProduct.quantity
-        );
+        const price = buyNowProduct.rawDiscountedPrice * buyNowProduct.quantity;
+        setOriginalTotalPrice(price);
+        setTotalPrice(price);
       } else {
-        // Nếu không tìm thấy sản phẩm trong localStorage, có thể điều hướng về trang chủ hoặc hiển thị lỗi
         notification.error({
           message: "Không tìm thấy sản phẩm",
           description: "Sản phẩm không tồn tại hoặc đã hết thời gian lưu trữ.",
         });
         setCheckoutItems([]);
+        setOriginalTotalPrice(0);
         setTotalPrice(0);
       }
     } else {
@@ -150,9 +99,87 @@ const CheckoutPage = () => {
             : "/default-image.jpg",
       }));
       setCheckoutItems(cartItems);
+      setOriginalTotalPrice(cartTotalPrice);
       setTotalPrice(cartTotalPrice);
     }
   }, [id, cart, cartTotalPrice]);
+
+  const OrderItems = ({ items, totalPrice }) => {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h2 className="text-2xl font-semibold text-gray-700 mb-6">
+          Thông Tin Đơn Hàng
+        </h2>
+        {items && items.length > 0 ? (
+          <>
+            {items.map((item, index) => (
+              <Row
+                key={item.id || index}
+                gutter={[12, 12]}
+                className="mb-4 border-b pb-4"
+              >
+                <Col span={6}>
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-20 object-cover rounded-md"
+                  />
+                </Col>
+                <Col span={18}>
+                  <p className="font-semibold text-gray-700">{item.name}</p>
+                  <p className="text-gray-500">
+                    Màu sắc: {item.color || "Chưa chọn"}
+                  </p>
+                  <p className="text-gray-500">Số lượng: {item.quantity}</p>
+                  <p className="text-red-500 font-semibold">
+                    {(item.rawDiscountedPrice * item.quantity).toLocaleString(
+                      "vi-VN",
+                      {
+                        style: "currency",
+                        currency: "VND",
+                      }
+                    )}
+                  </p>
+                </Col>
+              </Row>
+            ))}
+            <div className="flex justify-between py-3 border-t border-gray-200">
+              <span className="font-semibold text-gray-700">Tổng tiền:</span>
+              <div>
+                <span
+                  className={`font-semibold text-red-500 ${
+                    discount ? "line-through" : ""
+                  }`}
+                >
+                  {originalTotalPrice.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </span>
+                {discount && (
+                  <>
+                    <span className="mx-2">
+                      <ArrowRightOutlined />
+                    </span>
+                    <span className="font-semibold text-red-500 ml-2">
+                      {totalPrice.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <p className="text-gray-500 text-center">
+            Không có sản phẩm nào trong đơn hàng.
+          </p>
+        )}
+      </div>
+    );
+  };
 
   const loadData = async (selectedOptions) => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
@@ -223,63 +250,6 @@ const CheckoutPage = () => {
     }
   };
 
-  const onFinish = async (values) => {
-    try {
-      const orderData = {
-        ...values,
-        address: residenceLabels.join(", "),
-        totalPrice: totalPrice,
-        paymentMethod: selectedPaymentMethod,
-        items: checkoutItems,
-        createdAt: new Date().toISOString(),
-      };
-      if (selectedPaymentMethod !== "vnpay") {
-        console.log("Thông tin đặt hàng:", orderData);
-        notification.success({
-          message: "Đặt hàng thành công",
-          description:
-            "Cảm ơn bạn đã đặt hàng! Chúng tôi sẽ liên hệ với bạn sớm.",
-        });
-        if (id) {
-          localStorage.removeItem("buyNowProduct"); // Xóa sản phẩm "MUA NGAY"
-        } else {
-          clearCart(); // xóa giỏ hàng
-        }
-
-        form.resetFields();
-        setResidenceLabels([]);
-        setSelectedPaymentMethod("cod");
-        setQrCodeData(null);
-        setCheckoutItems([]);
-        setTotalPrice(0);
-        navigate("/");
-        return;
-      }
-      // Xóa dữ liệu sau khi đặt hàng thành công
-
-      const data = {
-        amount: totalPrice,
-        bankCode: "",
-      };
-      const res = await CreateVNPAYAPI(data);
-      window.location.href = res.data.paymentUrl;
-    } catch (error) {
-      console.error("Error creating VNPAY payment:", error);
-      notification.error({
-        message: "Lỗi thanh toán",
-        description: "Có lỗi xảy ra khi tạo thanh toán VNPAY.",
-      });
-    }
-  };
-
-  const onFinishFailed = (errorInfo) => {
-    console.log("Form lỗi:", errorInfo);
-    notification.error({
-      message: "Lỗi",
-      description: "Vui lòng điền đầy đủ thông tin để đặt hàng.",
-    });
-  };
-
   const handleGenerateQR = () => {
     const phone = form.getFieldValue("phone");
     const name = form.getFieldValue("username");
@@ -302,7 +272,225 @@ const CheckoutPage = () => {
       return;
     }
 
-    getQR(totalPrice, `${name} + ${phone}`);
+    // Sử dụng totalPrice sau khi trừ mã giảm giá
+    const finalPrice = totalPrice;
+    getQR(finalPrice, `${name} + ${phone}`);
+  };
+
+  const handleApplyDiscount = async () => {
+    if (!code) {
+      notification.warning({
+        message: "Chưa nhập mã giảm giá",
+        description: "Vui lòng nhập mã giảm giá trước khi sử dụng.",
+      });
+      return;
+    }
+
+    // Kiểm tra nếu mã giảm giá đã được áp dụng
+    if (discount && discount.code === code) {
+      notification.warning({
+        message: "Mã giảm giá đã được áp dụng",
+        description: "Bạn đã áp dụng mã giảm giá này rồi.",
+      });
+      return;
+    }
+
+    try {
+      const filter = { status: "active", code: code };
+      const response = await getAllDiscountAPI(null, null, filter);
+      const checkDis = response.data;
+
+      if (
+        !checkDis.statusCode ||
+        !checkDis.result ||
+        checkDis.result.length === 0
+      ) {
+        notification.error({
+          message: "Mã giảm giá không hợp lệ",
+          description: "Mã giảm giá không tồn tại hoặc đã hết hạn.",
+        });
+        setDiscount(null);
+        setDiscountAmount(0);
+        setTotalPrice(originalTotalPrice); // Khôi phục totalPrice về giá gốc
+        return;
+      }
+
+      const discountData = checkDis.result[0]; // Lấy phiếu giảm giá đầu tiên (nếu có)
+      const {
+        _id,
+        type,
+        value,
+        maxDiscountAmount,
+        minOrderValue,
+        maxUses,
+        usedCount,
+        isApplicableToAll,
+        applicableProducts,
+        startDate,
+        endDate,
+        status,
+      } = discountData;
+      console.log("usedCount :>> ", usedCount);
+
+      // Kiểm tra số lần sử dụng
+      if (usedCount >= maxUses) {
+        notification.error({
+          message: "Không thể áp dụng mã giảm giá",
+          description: "Mã giảm giá đã hết số lần sử dụng.",
+        });
+        setDiscount(null);
+        setDiscountAmount(0);
+        setTotalPrice(originalTotalPrice);
+        return;
+      }
+      // Kiểm tra giá trị đơn hàng tối thiểu
+      if (originalTotalPrice < minOrderValue) {
+        notification.error({
+          message: "Không thể áp dụng mã giảm giá",
+          description: `Đơn hàng phải có giá trị tối thiểu ${minOrderValue.toLocaleString(
+            "vi-VN",
+            { style: "currency", currency: "VND" }
+          )} để áp dụng mã này.`,
+        });
+        setDiscount(null);
+        setDiscountAmount(0);
+        setTotalPrice(originalTotalPrice);
+        return;
+      }
+      // Kiểm tra sản phẩm áp dụng
+      if (id) {
+        const applicableProductIds = applicableProducts.map((p) =>
+          p._id?.toString()
+        );
+        var hasApplicableProduct = checkoutItems.some((c) =>
+          applicableProductIds.includes(c.id?.toString())
+        );
+      } else if (
+        !isApplicableToAll &&
+        applicableProducts &&
+        applicableProducts.length > 0
+      ) {
+        const applicableProductIds = applicableProducts.map((p) =>
+          p._id?.toString()
+        );
+        hasApplicableProduct = cart.some((c) =>
+          applicableProductIds.includes(c.product._id?.toString())
+        );
+      }
+      if (!hasApplicableProduct) {
+        notification.error({
+          message: "Không thể áp dụng mã giảm giá",
+          description:
+            "Không có sản phẩm nào trong đơn hàng áp dụng được mã này.",
+        });
+        setDiscount(null);
+        setDiscountAmount(0);
+        setTotalPrice(originalTotalPrice);
+        return;
+      }
+      // Tính giá trị giảm giá
+      let discountValue = 0;
+      if (type === "percentage") {
+        discountValue = (originalTotalPrice * value) / 100;
+        if (maxDiscountAmount && discountValue > maxDiscountAmount) {
+          discountValue = maxDiscountAmount;
+        }
+      } else if (type === "fixed") {
+        discountValue = value;
+      }
+
+      // // Áp dụng giảm giá
+      setDiscount(discountData);
+      setDiscountAmount(discountValue);
+      setTotalPrice(originalTotalPrice - discountValue); // Tính lại totalPrice từ giá gốc
+      console.log("usedCount :>> ", usedCount);
+      notification.success({
+        message: "Áp dụng mã giảm giá thành công",
+        description: `Bạn đã được giảm ${discountValue.toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        })}!`,
+      });
+    } catch (error) {
+      console.error("Error applying discount:", error);
+      notification.error({
+        message: "Lỗi",
+        description: "Có lỗi xảy ra khi áp dụng mã giảm giá. Vui lòng thử lại.",
+      });
+      setDiscount(null);
+      setDiscountAmount(0);
+      setTotalPrice(originalTotalPrice);
+    }
+  };
+
+  const onFinish = async (values) => {
+    try {
+      const orderData = {
+        ...values,
+        address: residenceLabels.join(", "),
+        totalPrice: totalPrice, // Sử dụng totalPrice sau khi trừ mã giảm giá
+        paymentMethod: selectedPaymentMethod,
+        items: checkoutItems,
+        createdAt: new Date().toISOString(),
+        discountCode: discount ? discount.code : null,
+      };
+
+      if (selectedPaymentMethod !== "vnpay") {
+        notification.success({
+          message: "Đặt hàng thành công",
+          description:
+            "Cảm ơn bạn đã đặt hàng! Chúng tôi sẽ liên hệ với bạn sớm.",
+        });
+        if (discount) {
+          const updatedDiscount = {
+            id: discount._id,
+            usedCount: (discount.usedCount || 0) + 1,
+          };
+          const updateResponse = await updateDiscountAPI(updatedDiscount);
+          console.log("updateResponse :>> ", updateResponse);
+        }
+        if (id) {
+          localStorage.removeItem("buyNowProduct"); // Xóa sản phẩm "MUA NGAY"
+        } else {
+          clearCart(); // Xóa giỏ hàng
+        }
+
+        form.resetFields();
+        setResidenceLabels([]);
+        setSelectedPaymentMethod("cod");
+        setQrCodeData(null);
+        setCheckoutItems([]);
+        setOriginalTotalPrice(0);
+        setTotalPrice(0);
+        setDiscount(null);
+        setDiscountAmount(0);
+        setCode("");
+        navigate("/");
+        return;
+      }
+
+      const data = {
+        amount: totalPrice, // Sử dụng totalPrice sau khi trừ mã giảm giá
+        bankCode: "",
+        discountId: discount?._id,
+      };
+      const res = await CreateVNPAYAPI(data);
+      window.location.href = res.data.paymentUrl;
+    } catch (error) {
+      console.error("Error creating VNPAY payment:", error);
+      notification.error({
+        message: "Lỗi thanh toán",
+        description: "Có lỗi xảy réalisés khi tạo thanh toán VNPAY.",
+      });
+    }
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log("Form lỗi:", errorInfo);
+    notification.error({
+      message: "Lỗi",
+      description: "Vui lòng điền đầy đủ thông tin để đặt hàng.",
+    });
   };
 
   return (
@@ -337,6 +525,7 @@ const CheckoutPage = () => {
                 <Input
                   placeholder="Nhập họ và tên"
                   onChange={handleGenerateQR}
+                  className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
                 />
               </Form.Item>
 
@@ -353,8 +542,8 @@ const CheckoutPage = () => {
               >
                 <Input
                   placeholder="Nhập số điện thoại"
-                  className="w-full"
                   onChange={handleGenerateQR}
+                  className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
                 />
               </Form.Item>
 
@@ -374,6 +563,17 @@ const CheckoutPage = () => {
                   placeholder="Chọn Tỉnh/Thành, Quận/Huyện, Phường/Xã"
                   changeOnSelect
                   className="w-full"
+                  popupClassName="rounded-lg"
+                  style={{
+                    height: "48px",
+                    borderRadius: "8px",
+                    border: "1px solid #d1d5db",
+                  }}
+                  dropdownRender={(menu) => (
+                    <div className="rounded-lg shadow-lg border border-gray-200 bg-white">
+                      {menu}
+                    </div>
+                  )}
                 />
               </Form.Item>
 
@@ -389,7 +589,7 @@ const CheckoutPage = () => {
               >
                 <Input
                   placeholder="Số nhà, tên đường,..."
-                  className="rounded-md border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200"
+                  className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
                 />
               </Form.Item>
 
@@ -417,8 +617,8 @@ const CheckoutPage = () => {
                     }
                   }}
                 >
-                  <div>
-                    <Radio value="bank_account" className="flex items-start">
+                  <div className="flex items-start">
+                    <Radio value="bank_account" className="flex items-center">
                       <div className="flex items-center gap-2">
                         <img
                           src="https://cdn-icons-png.flaticon.com/512/888/888162.png"
@@ -430,37 +630,37 @@ const CheckoutPage = () => {
                         </span>
                       </div>
                     </Radio>
-                    {selectedPaymentMethod === "bank_account" && (
-                      <div className="ml-10 mt-1 text-gray-500 text-sm">
-                        <p className="italic">Tên tài khoản: NGUYEN HUY DAT</p>
-                        <p className="mt-1">Số tài khoản: 102873114863</p>
-                        <p className="mt-1">Ngân hàng: ViettinBank</p>
-                        <p className="mt-1">Nội dung: Tên + SĐT đặt hàng</p>
-                        {qrCodeData && (
-                          <div className="mt-2">
-                            <p className="text-gray-700 font-semibold">
-                              Quét mã QR để thanh toán:
-                            </p>
-                            <img
-                              src={qrCodeData}
-                              alt="QR Code"
-                              className="w-96 h-96 mt-2 border border-gray-300 rounded-md "
-                            />
-                            <a
-                              href={qrCodeData}
-                              download="qr-code.png"
-                              className="text-blue-600 hover:underline mt-2 block"
-                            >
-                              Tải mã QR
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    )}
                   </div>
+                  {selectedPaymentMethod === "bank_account" && (
+                    <div className="ml-10 mt-1 text-gray-500 text-sm bg-gray-50 p-4 rounded-lg">
+                      <p className="italic">Tên tài khoản: NGUYEN HUY DAT</p>
+                      <p className="mt-1">Số tài khoản: 102873114863</p>
+                      <p className="mt-1">Ngân hàng: ViettinBank</p>
+                      <p className="mt-1">Nội dung: Tên + SĐT đặt hàng</p>
+                      {qrCodeData && (
+                        <div className="mt-2">
+                          <p className="text-gray-700 font-semibold">
+                            Quét mã QR để thanh toán:
+                          </p>
+                          <img
+                            src={qrCodeData}
+                            alt="QR Code"
+                            className="w-48 h-48 mt-2 border border-gray-300 rounded-md mx-auto"
+                          />
+                          <a
+                            href={qrCodeData}
+                            download="qr-code.png"
+                            className="text-blue-600 hover:underline mt-2 block text-center"
+                          >
+                            Tải mã QR
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
-                  <div>
-                    <Radio value="cod" className="flex items-start">
+                  <div className="flex items-start">
+                    <Radio value="cod" className="flex items-center">
                       <div className="flex items-center gap-2">
                         <img
                           src="https://cdn-icons-png.flaticon.com/512/888/888162.png"
@@ -472,29 +672,31 @@ const CheckoutPage = () => {
                         </span>
                       </div>
                     </Radio>
-                    {selectedPaymentMethod === "cod" && (
-                      <p className="text-gray-500 italic text-sm ml-10 mt-1">
-                        Khi nhận hàng vui lòng ký đầy đủ giấy tờ để được bàn
-                        giao nội thất
-                      </p>
-                    )}
                   </div>
+                  {selectedPaymentMethod === "cod" && (
+                    <p className="text-gray-500 italic text-sm ml-10 mt-1 bg-gray-50 p-4 rounded-lg">
+                      Khi nhận hàng vui lòng ký đầy đủ giấy tờ để được bàn giao
+                      nội thất
+                    </p>
+                  )}
 
-                  <Radio value="vnpay" className="flex items-start">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="/image/vnpay.png"
-                        alt="VNPay Logo"
-                        className="w-6 h-6"
-                      />
-                      <span className="text-gray-700">
-                        Thanh toán online qua cổng VNPay
-                        <span className="text-gray-500 text-sm ml-1">
-                          (ATM/Visa/QR Pay trên Internet Banking)
+                  <div className="flex items-start">
+                    <Radio value="vnpay" className="flex items-center">
+                      <div className="flex items-center gap-2">
+                        <img
+                          src="/image/vnpay.png"
+                          alt="VNPay Logo"
+                          className="w-6 h-6"
+                        />
+                        <span className="text-gray-700">
+                          Thanh toán online qua cổng VNPay
+                          <span className="text-gray-500 text-sm ml-1">
+                            (ATM/Visa/QR Pay trên Internet Banking)
+                          </span>
                         </span>
-                      </span>
-                    </div>
-                  </Radio>
+                      </div>
+                    </Radio>
+                  </div>
                 </Radio.Group>
               </Form.Item>
 
@@ -508,7 +710,7 @@ const CheckoutPage = () => {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="w-full h-12 font-semibold rounded-md bg-blue-600 hover:bg-blue-700"
+                  className="w-full h-12 font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 transition duration-200 ease-in-out text-white shadow-md"
                 >
                   Đặt Hàng
                 </Button>
@@ -519,6 +721,31 @@ const CheckoutPage = () => {
 
         <Col xs={24} md={10}>
           <OrderItems items={checkoutItems} totalPrice={totalPrice} />
+          <div className="flex items-center gap-3 mt-4">
+            <Input
+              placeholder="Nhập phiếu giảm giá"
+              className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+            <Button
+              type="primary"
+              className="h-12 px-6 font-semibold rounded-lg bg-green-600 hover:bg-green-700 transition duration-200 ease-in-out text-white shadow-md"
+              onClick={handleApplyDiscount}
+            >
+              Sử dụng
+            </Button>
+          </div>
+          {discount && (
+            <p className="text-green-600 mt-2">
+              Đã áp dụng mã giảm giá: {discount.code} (Giảm{" "}
+              {discountAmount.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+              )
+            </p>
+          )}
         </Col>
       </Row>
     </div>

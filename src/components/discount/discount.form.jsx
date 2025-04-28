@@ -54,7 +54,7 @@ const DiscountFormComponent = (props) => {
     const newValues = {
       code,
       isApplicableToAll,
-      maxUses: maxUses || undefined,
+      maxUses,
       minOrderValue,
       status,
       type,

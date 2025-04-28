@@ -41,7 +41,6 @@ const DiscountUpdateFormComponent = (props) => {
     discountForm.resetFields();
     setIsModalUpdateOpen(false);
   };
-
   const onFill = () => {
     if (dataDetail) {
       discountForm.setFieldsValue({
@@ -68,7 +67,7 @@ const DiscountUpdateFormComponent = (props) => {
     const {
       id,
       code,
-      isApplicableToAll, // Sửa thành isApplicableToAll
+      isApplicableToAll,
       maxUses,
       minOrderValue,
       status,
@@ -78,7 +77,6 @@ const DiscountUpdateFormComponent = (props) => {
       maxDiscountAmount,
       dateRange, // Lấy dateRange từ values
     } = values;
-    console.log("values :>> ", values);
     const startDate =
       dateRange && dateRange[0] ? dateRange[0].toISOString() : undefined;
     const endDate =
@@ -87,7 +85,7 @@ const DiscountUpdateFormComponent = (props) => {
       id,
       code,
       isApplicableToAll,
-      maxUses: maxUses == null ? "" : maxUses,
+      maxUses,
       minOrderValue,
       status,
       type,

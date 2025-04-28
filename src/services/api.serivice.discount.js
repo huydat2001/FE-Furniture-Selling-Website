@@ -12,6 +12,12 @@ const getAllDiscountAPI = (current, pageSize, filter = {}) => {
   if (filter.status) {
     params.append("status", filter.status);
   }
+  if (filter.code) {
+    params.append("code", filter.code);
+  }
+  if (filter._id) {
+    params.append("_id", filter._id);
+  }
   let URL_BACKEND = `/v1/api/discount?${params.toString()}`;
   return axios.get(URL_BACKEND);
 };

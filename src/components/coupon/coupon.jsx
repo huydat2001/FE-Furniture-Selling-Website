@@ -70,6 +70,21 @@ const CouponComponent = () => {
                           ? `Giảm ${dis.value}%`
                           : `Giảm ${dis.value.toLocaleString("vi-VN")} VND`}
                       </h3>
+                      <p>
+                        Giảm tối đa{" "}
+                        {dis.type === "percentage"
+                          ? dis.maxDiscountAmount
+                            ? dis.maxDiscountAmount.toLocaleString("vi-VN") +
+                              " VND"
+                            : "không giới hạn"
+                          : dis.value.toLocaleString("vi-VN") + " VND"}
+                      </p>
+                      <p>
+                        Cho đơn tối thiểu{" "}
+                        {dis.minOrderValue
+                          ? dis.minOrderValue.toLocaleString("vi-VN") + " VND"
+                          : "0đ"}
+                      </p>
                       <div className="coupon-row">
                         <span
                           ref={(el) => (cpnCodeRefs.current[dis.code] = el)}

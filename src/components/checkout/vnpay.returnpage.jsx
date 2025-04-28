@@ -7,6 +7,10 @@ import {
   CloseCircleOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
+import {
+  getAllDiscountAPI,
+  updateDiscountAPI,
+} from "../../services/api.serivice.discount";
 
 const VNPayReturnPage = () => {
   const navigate = useNavigate();
@@ -20,6 +24,12 @@ const VNPayReturnPage = () => {
       try {
         // Lấy query params từ URL
         const queryParams = new URLSearchParams(location.search);
+        const orderInfo = queryParams.get("vnp_OrderInfo");
+        let discountId;
+        if (orderInfo && orderInfo.includes("discountId:")) {
+          discountId = orderInfo.split("discountId:")[1];
+        }
+
         if (!queryParams.toString()) {
           throw new Error("Không tìm thấy tham số thanh toán.");
         }
@@ -36,6 +46,16 @@ const VNPayReturnPage = () => {
             description:
               "Cảm ơn bạn đã đặt hàng! Chúng tôi sẽ liên hệ với bạn sớm.",
           });
+          if (discountId) {
+            const filter = { _id: discountId };
+            const getDiscount = await getAllDiscountAPI(null, null, filter);
+            const discountData = getDiscount.data.result[0];
+            const updatedDiscount = {
+              id: discountId,
+              usedCount: (discountData.usedCount || 0) + 1,
+            };
+            const updateResponse = await updateDiscountAPI(updatedDiscount);
+          }
         } else if (code === "24") {
           setStatus("cancelled");
           notification.warning({
