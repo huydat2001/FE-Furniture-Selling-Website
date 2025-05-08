@@ -27,6 +27,8 @@ import {
   updateDiscountAPI,
 } from "../../services/api.serivice.discount";
 import { ArrowRightOutlined } from "@ant-design/icons";
+import { createOrderAPI } from "../../services/api.service.order";
+import { jwtDecode } from "jwt-decode";
 
 const CheckoutPage = () => {
   const [form] = Form.useForm();
@@ -425,16 +427,28 @@ const CheckoutPage = () => {
 
   const onFinish = async (values) => {
     try {
+      const token = localStorage.getItem("access_token");
+      const decoded = jwtDecode(token);
+      const userId = decoded.id;
       const orderData = {
-        ...values,
-        address: residenceLabels.join(", "),
-        totalPrice: totalPrice, // Sử dụng totalPrice sau khi trừ mã giảm giá
-        paymentMethod: selectedPaymentMethod,
-        items: checkoutItems,
-        createdAt: new Date().toISOString(),
-        discountCode: discount ? discount.code : null,
-      };
+        user: userId,
+        totalAmount: totalPrice,
 
+        products: checkoutItems.map((item) => ({
+          product: item.id,
+          quantity: item.quantity,
+          price: item.rawDiscountedPrice,
+        })),
+
+        shippingAddress: {
+          fullName: values.username,
+          phone: values.phone,
+          street: values.residence[2] + " " + values.addressDetail,
+          city: values.residence[0],
+          state: values.residence[1],
+        },
+        paymentMethod: selectedPaymentMethod,
+      };
       if (selectedPaymentMethod !== "vnpay") {
         notification.success({
           message: "Đặt hàng thành công",
@@ -446,15 +460,14 @@ const CheckoutPage = () => {
             id: discount._id,
             usedCount: (discount.usedCount || 0) + 1,
           };
-          const updateResponse = await updateDiscountAPI(updatedDiscount);
-          console.log("updateResponse :>> ", updateResponse);
+          await updateDiscountAPI(updatedDiscount);
         }
         if (id) {
           localStorage.removeItem("buyNowProduct"); // Xóa sản phẩm "MUA NGAY"
         } else {
           clearCart(); // Xóa giỏ hàng
         }
-
+        const res = await createOrderAPI(orderData);
         form.resetFields();
         setResidenceLabels([]);
         setSelectedPaymentMethod("cod");
@@ -474,6 +487,9 @@ const CheckoutPage = () => {
         bankCode: "",
         discountId: discount?._id,
       };
+      console.log("orderData :>> ", orderData);
+
+      localStorage.setItem("pendingOrder", JSON.stringify(orderData));
       const res = await CreateVNPAYAPI(data);
       window.location.href = res.data.paymentUrl;
     } catch (error) {
@@ -494,261 +510,269 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-semibold text-gray-800 mb-10 text-center">
-        Thanh Toán
-      </h1>
-      <Row gutter={[32, 32]}>
-        <Col xs={24} md={14}>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-6">
-              Thông Tin Khách Hàng
-            </h2>
-            <Form
-              form={form}
-              name="checkout"
-              labelCol={{ span: 8 }}
-              wrapperCol={{ span: 16 }}
-              style={{ maxWidth: 800 }}
-              initialValues={{ transport: "cod" }}
-              onFinish={onFinish}
-              onFinishFailed={onFinishFailed}
-              autoComplete="off"
-            >
-              <Form.Item
-                label="Họ và Tên"
-                name="username"
-                rules={[
-                  { required: true, message: "Vui lòng nhập họ và tên!" },
-                ]}
+    <>
+      <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        <h1 className="text-3xl font-semibold text-gray-800 mb-10 text-center">
+          Thanh Toán
+        </h1>
+        <Row gutter={[32, 32]}>
+          <Col xs={24} md={14}>
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h2 className="text-2xl font-semibold text-gray-700 mb-6">
+                Thông Tin Khách Hàng
+              </h2>
+              <Form
+                form={form}
+                name="checkout"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                style={{ maxWidth: 800 }}
+                initialValues={{ transport: "cod" }}
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
+                autoComplete="off"
               >
-                <Input
-                  placeholder="Nhập họ và tên"
-                  onChange={handleGenerateQR}
-                  className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
-                />
-              </Form.Item>
+                <Form.Item
+                  label="Họ và Tên"
+                  name="username"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập họ và tên!" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Nhập họ và tên"
+                    onChange={handleGenerateQR}
+                    className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
+                  />
+                </Form.Item>
 
-              <Form.Item
-                label="Số điện thoại"
-                name="phone"
-                rules={[
-                  { required: true, message: "Vui lòng nhập số điện thoại!" },
-                  {
-                    pattern: /^[0-9]{9,15}$/,
-                    message: "Số điện thoại không hợp lệ!",
-                  },
-                ]}
-              >
-                <Input
-                  placeholder="Nhập số điện thoại"
-                  onChange={handleGenerateQR}
-                  className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
-                />
-              </Form.Item>
+                <Form.Item
+                  label="Số điện thoại"
+                  name="phone"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập số điện thoại!" },
+                    {
+                      pattern: /^[0-9]{9,15}$/,
+                      message: "Số điện thoại không hợp lệ!",
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder="Nhập số điện thoại"
+                    onChange={handleGenerateQR}
+                    className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
+                  />
+                </Form.Item>
 
-              <Form.Item
-                label="Địa chỉ"
-                name="residence"
-                rules={[{ required: true, message: "Vui lòng chọn địa chỉ!" }]}
-                getValueFromEvent={(value, selectedOptions) => {
-                  const labels = selectedOptions.map((option) => option.label);
-                  setResidenceLabels(labels);
-                  return labels;
-                }}
-              >
-                <Cascader
-                  options={options}
-                  loadData={loadData}
-                  placeholder="Chọn Tỉnh/Thành, Quận/Huyện, Phường/Xã"
-                  changeOnSelect
-                  className="w-full"
-                  popupClassName="rounded-lg"
-                  style={{
-                    height: "48px",
-                    borderRadius: "8px",
-                    border: "1px solid #d1d5db",
-                  }}
-                  dropdownRender={(menu) => (
-                    <div className="rounded-lg shadow-lg border border-gray-200 bg-white">
-                      {menu}
-                    </div>
-                  )}
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Địa chỉ chi tiết"
-                name="addressDetail"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập địa chỉ chi tiết!",
-                  },
-                ]}
-              >
-                <Input
-                  placeholder="Số nhà, tên đường,..."
-                  className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
-                />
-              </Form.Item>
-
-              <Form.Item
-                label={
-                  <span className="font-semibold">Phương thức thanh toán</span>
-                }
-                name="transport"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng chọn phương thức thanh toán!",
-                  },
-                ]}
-              >
-                <Radio.Group
-                  className="flex flex-col gap-4"
-                  onChange={(e) => {
-                    const method = e.target.value;
-                    setSelectedPaymentMethod(method);
-                    if (method === "bank_account") {
-                      handleGenerateQR();
-                    } else {
-                      setQrCodeData(null);
-                    }
+                <Form.Item
+                  label="Địa chỉ"
+                  name="residence"
+                  rules={[
+                    { required: true, message: "Vui lòng chọn địa chỉ!" },
+                  ]}
+                  getValueFromEvent={(value, selectedOptions) => {
+                    const labels = selectedOptions.map(
+                      (option) => option.label
+                    );
+                    setResidenceLabels(labels);
+                    return labels;
                   }}
                 >
-                  <div className="flex items-start">
-                    <Radio value="bank_account" className="flex items-center">
-                      <div className="flex items-center gap-2">
-                        <img
-                          src="https://cdn-icons-png.flaticon.com/512/888/888162.png"
-                          alt="Bank Icon"
-                          className="w-6 h-6"
-                        />
-                        <span className="text-gray-700">
-                          Thanh toán chuyển khoản qua ngân hàng
-                        </span>
+                  <Cascader
+                    options={options}
+                    loadData={loadData}
+                    placeholder="Chọn Tỉnh/Thành, Quận/Huyện, Phường/Xã"
+                    changeOnSelect
+                    className="w-full"
+                    popupClassName="rounded-lg"
+                    style={{
+                      height: "48px",
+                      borderRadius: "8px",
+                      border: "1px solid #d1d5db",
+                    }}
+                    dropdownRender={(menu) => (
+                      <div className="rounded-lg shadow-lg border border-gray-200 bg-white">
+                        {menu}
                       </div>
-                    </Radio>
-                  </div>
-                  {selectedPaymentMethod === "bank_account" && (
-                    <div className="ml-10 mt-1 text-gray-500 text-sm bg-gray-50 p-4 rounded-lg">
-                      <p className="italic">Tên tài khoản: NGUYEN HUY DAT</p>
-                      <p className="mt-1">Số tài khoản: 102873114863</p>
-                      <p className="mt-1">Ngân hàng: ViettinBank</p>
-                      <p className="mt-1">Nội dung: Tên + SĐT đặt hàng</p>
-                      {qrCodeData && (
-                        <div className="mt-2">
-                          <p className="text-gray-700 font-semibold">
-                            Quét mã QR để thanh toán:
-                          </p>
+                    )}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Địa chỉ chi tiết"
+                  name="addressDetail"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập địa chỉ chi tiết!",
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder="Số nhà, tên đường,..."
+                    className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label={
+                    <span className="font-semibold">
+                      Phương thức thanh toán
+                    </span>
+                  }
+                  name="transport"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn phương thức thanh toán!",
+                    },
+                  ]}
+                >
+                  <Radio.Group
+                    className="flex flex-col gap-4"
+                    onChange={(e) => {
+                      const method = e.target.value;
+                      setSelectedPaymentMethod(method);
+                      if (method === "bank_account") {
+                        handleGenerateQR();
+                      } else {
+                        setQrCodeData(null);
+                      }
+                    }}
+                  >
+                    <div className="flex items-start">
+                      <Radio value="bank_account" className="flex items-center">
+                        <div className="flex items-center gap-2">
                           <img
-                            src={qrCodeData}
-                            alt="QR Code"
-                            className="w-48 h-48 mt-2 border border-gray-300 rounded-md mx-auto"
+                            src="https://cdn-icons-png.flaticon.com/512/888/888162.png"
+                            alt="Bank Icon"
+                            className="w-6 h-6"
                           />
-                          <a
-                            href={qrCodeData}
-                            download="qr-code.png"
-                            className="text-blue-600 hover:underline mt-2 block text-center"
-                          >
-                            Tải mã QR
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex items-start">
-                    <Radio value="cod" className="flex items-center">
-                      <div className="flex items-center gap-2">
-                        <img
-                          src="https://cdn-icons-png.flaticon.com/512/888/888162.png"
-                          alt="POS Icon"
-                          className="w-6 h-6"
-                        />
-                        <span className="text-gray-700">
-                          Thanh toán khi giao hàng
-                        </span>
-                      </div>
-                    </Radio>
-                  </div>
-                  {selectedPaymentMethod === "cod" && (
-                    <p className="text-gray-500 italic text-sm ml-10 mt-1 bg-gray-50 p-4 rounded-lg">
-                      Khi nhận hàng vui lòng ký đầy đủ giấy tờ để được bàn giao
-                      nội thất
-                    </p>
-                  )}
-
-                  <div className="flex items-start">
-                    <Radio value="vnpay" className="flex items-center">
-                      <div className="flex items-center gap-2">
-                        <img
-                          src="/image/vnpay.png"
-                          alt="VNPay Logo"
-                          className="w-6 h-6"
-                        />
-                        <span className="text-gray-700">
-                          Thanh toán online qua cổng VNPay
-                          <span className="text-gray-500 text-sm ml-1">
-                            (ATM/Visa/QR Pay trên Internet Banking)
+                          <span className="text-gray-700">
+                            Thanh toán chuyển khoản qua ngân hàng
                           </span>
-                        </span>
+                        </div>
+                      </Radio>
+                    </div>
+                    {selectedPaymentMethod === "bank_account" && (
+                      <div className="ml-10 mt-1 text-gray-500 text-sm bg-gray-50 p-4 rounded-lg">
+                        <p className="italic">Tên tài khoản: NGUYEN HUY DAT</p>
+                        <p className="mt-1">Số tài khoản: 102873114863</p>
+                        <p className="mt-1">Ngân hàng: ViettinBank</p>
+                        <p className="mt-1">Nội dung: Tên + SĐT đặt hàng</p>
+                        {qrCodeData && (
+                          <div className="mt-2">
+                            <p className="text-gray-700 font-semibold">
+                              Quét mã QR để thanh toán:
+                            </p>
+                            <img
+                              src={qrCodeData}
+                              alt="QR Code"
+                              className="w-48 h-48 mt-2 border border-gray-300 rounded-md mx-auto"
+                            />
+                            <a
+                              href={qrCodeData}
+                              download="qr-code.png"
+                              className="text-blue-600 hover:underline mt-2 block text-center"
+                            >
+                              Tải mã QR
+                            </a>
+                          </div>
+                        )}
                       </div>
-                    </Radio>
-                  </div>
-                </Radio.Group>
-              </Form.Item>
+                    )}
 
-              <Form.Item
-                wrapperCol={{
-                  xs: { offset: 0, span: 24 },
-                  sm: { offset: 0, span: 24 },
-                  md: { offset: 8, span: 16 },
-                }}
-              >
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  className="w-full h-12 font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 transition duration-200 ease-in-out text-white shadow-md"
+                    <div className="flex items-start">
+                      <Radio value="cod" className="flex items-center">
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="https://cdn-icons-png.flaticon.com/512/888/888162.png"
+                            alt="POS Icon"
+                            className="w-6 h-6"
+                          />
+                          <span className="text-gray-700">
+                            Thanh toán khi giao hàng
+                          </span>
+                        </div>
+                      </Radio>
+                    </div>
+                    {selectedPaymentMethod === "cod" && (
+                      <p className="text-gray-500 italic text-sm ml-10 mt-1 bg-gray-50 p-4 rounded-lg">
+                        Khi nhận hàng vui lòng ký đầy đủ giấy tờ để được bàn
+                        giao nội thất
+                      </p>
+                    )}
+
+                    <div className="flex items-start">
+                      <Radio value="vnpay" className="flex items-center">
+                        <div className="flex items-center gap-2">
+                          <img
+                            src="/image/vnpay.png"
+                            alt="VNPay Logo"
+                            className="w-6 h-6"
+                          />
+                          <span className="text-gray-700">
+                            Thanh toán online qua cổng VNPay
+                            <span className="text-gray-500 text-sm ml-1">
+                              (ATM/Visa/QR Pay trên Internet Banking)
+                            </span>
+                          </span>
+                        </div>
+                      </Radio>
+                    </div>
+                  </Radio.Group>
+                </Form.Item>
+
+                <Form.Item
+                  wrapperCol={{
+                    xs: { offset: 0, span: 24 },
+                    sm: { offset: 0, span: 24 },
+                    md: { offset: 8, span: 16 },
+                  }}
                 >
-                  Đặt Hàng
-                </Button>
-              </Form.Item>
-            </Form>
-          </div>
-        </Col>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="w-full h-12 font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 transition duration-200 ease-in-out text-white shadow-md"
+                  >
+                    Đặt Hàng
+                  </Button>
+                </Form.Item>
+              </Form>
+            </div>
+          </Col>
 
-        <Col xs={24} md={10}>
-          <OrderItems items={checkoutItems} totalPrice={totalPrice} />
-          <div className="flex items-center gap-3 mt-4">
-            <Input
-              placeholder="Nhập phiếu giảm giá"
-              className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-            />
-            <Button
-              type="primary"
-              className="h-12 px-6 font-semibold rounded-lg bg-green-600 hover:bg-green-700 transition duration-200 ease-in-out text-white shadow-md"
-              onClick={handleApplyDiscount}
-            >
-              Sử dụng
-            </Button>
-          </div>
-          {discount && (
-            <p className="text-green-600 mt-2">
-              Đã áp dụng mã giảm giá: {discount.code} (Giảm{" "}
-              {discountAmount.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-              )
-            </p>
-          )}
-        </Col>
-      </Row>
-    </div>
+          <Col xs={24} md={10}>
+            <OrderItems items={checkoutItems} totalPrice={totalPrice} />
+            <div className="flex items-center gap-3 mt-4">
+              <Input
+                placeholder="Nhập phiếu giảm giá"
+                className="w-full h-12 px-4 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-200 ease-in-out"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+              />
+              <Button
+                type="primary"
+                className="h-12 px-6 font-semibold rounded-lg bg-green-600 hover:bg-green-700 transition duration-200 ease-in-out text-white shadow-md"
+                onClick={handleApplyDiscount}
+              >
+                Sử dụng
+              </Button>
+            </div>
+            {discount && (
+              <p className="text-green-600 mt-2">
+                Đã áp dụng mã giảm giá: {discount.code} (Giảm{" "}
+                {discountAmount.toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+                )
+              </p>
+            )}
+          </Col>
+        </Row>
+      </div>
+    </>
   );
 };
 

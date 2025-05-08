@@ -13,6 +13,7 @@ import { FaProductHunt, FaUser } from "react-icons/fa";
 import { BiSolidCategory, BiSolidDiscount } from "react-icons/bi";
 import { CiDiscount1 } from "react-icons/ci";
 import { TbBrandBebo } from "react-icons/tb";
+import { MdPayments } from "react-icons/md";
 const Navbar = (props) => {
   const [current, setCurrent] = useState("");
   const [openKeys, setOpenKeys] = useState([]);
@@ -29,6 +30,7 @@ const Navbar = (props) => {
         "discounts",
         "brands",
         "products",
+        "orders",
       ];
 
       // Trích xuất phần cuối của pathname (sau "/admin/")
@@ -53,6 +55,9 @@ const Navbar = (props) => {
           setOpenKeys(["management"]);
         }
         if (currentRoute === "products") {
+          setOpenKeys(["management"]);
+        }
+        if (currentRoute === "orders") {
           setOpenKeys(["management"]);
         }
         if (currentRoute === "apps") {
@@ -117,6 +122,11 @@ const Navbar = (props) => {
           label: <Link to="/admin/products">Sản phẩm</Link>,
           key: "products",
           icon: <FaProductHunt />,
+        },
+        {
+          label: <Link to="/admin/orders">Giao dịch</Link>,
+          key: "orders",
+          icon: <MdPayments />,
         },
       ],
     },

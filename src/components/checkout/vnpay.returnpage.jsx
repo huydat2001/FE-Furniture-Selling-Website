@@ -11,6 +11,7 @@ import {
   getAllDiscountAPI,
   updateDiscountAPI,
 } from "../../services/api.serivice.discount";
+import { createOrderAPI } from "../../services/api.service.order";
 
 const VNPayReturnPage = () => {
   const navigate = useNavigate();
@@ -54,8 +55,14 @@ const VNPayReturnPage = () => {
               id: discountId,
               usedCount: (discountData.usedCount || 0) + 1,
             };
-            const updateResponse = await updateDiscountAPI(updatedDiscount);
+            await updateDiscountAPI(updatedDiscount);
           }
+          const pendingOrder = JSON.parse(localStorage.getItem("pendingOrder"));
+          if (!pendingOrder) {
+            throw new Error("Không tìm thấy thông tin đơn hàng.");
+          }
+          // Gọi API để tạo đơn hàng
+          const res = await createOrderAPI(pendingOrder);
         } else if (code === "24") {
           setStatus("cancelled");
           notification.warning({
@@ -70,6 +77,8 @@ const VNPayReturnPage = () => {
             description: `Mã lỗi: ${code}. Vui lòng thử lại.`,
           });
         }
+        // Xóa dữ liệu tạm thời trong localStorage
+        localStorage.removeItem("pendingOrder");
       } catch (error) {
         console.error("Error checking VNPAY return:", error);
         setStatus("failed");

@@ -31,7 +31,6 @@ const DiscountPage = () => {
   };
   const getProduct = async () => {
     const res = await getAllProductAPI(null, null, filter);
-    console.log("res :>> ", res);
     const options = res.data.result
       .map((dis) => ({
         value: dis._id,

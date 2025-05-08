@@ -21,6 +21,7 @@ import ScrollToTop from "./components/until/scrolltotop.jsx";
 import { CartProvider } from "./contexts/cart.context.jsx";
 import CheckoutPage from "./pages/user/checkout.user.jsx";
 import VNPayReturnPage from "./components/checkout/vnpay.returnpage.jsx";
+import OrderPage from "./pages/admin/order.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -83,6 +84,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <ProductPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "orders",
+        element: (
+          <PrivateRoute>
+            <OrderPage />
           </PrivateRoute>
         ),
       },
