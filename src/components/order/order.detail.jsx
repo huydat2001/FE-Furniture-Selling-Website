@@ -1,5 +1,4 @@
 import { Descriptions, Drawer, Spin, Tag, Typography } from "antd";
-import { data } from "autoprefixer";
 
 const DetaiOrderComponent = (props) => {
   const { openDraw, setOpenDraw, dataDetail } = props;
