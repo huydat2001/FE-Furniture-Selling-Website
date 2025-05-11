@@ -22,6 +22,7 @@ import { CartProvider } from "./contexts/cart.context.jsx";
 import CheckoutPage from "./pages/user/checkout.user.jsx";
 import VNPayReturnPage from "./components/checkout/vnpay.returnpage.jsx";
 import OrderPage from "./pages/admin/order.jsx";
+import HistoryOrderPage from "./pages/user/history.order.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -115,6 +116,10 @@ const router = createBrowserRouter([
       {
         path: "checkout/:id",
         element: <CheckoutPage />,
+      },
+      {
+        path: "orders",
+        element: <HistoryOrderPage />,
       },
     ],
   },

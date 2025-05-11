@@ -10,6 +10,7 @@ import { Avatar, Button, Drawer, message, Tooltip } from "antd";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../contexts/auth.context";
 import { useNavigate } from "react-router-dom";
+import { nav } from "motion/react-client";
 const HeaderLayout = (props) => {
   const [openProfile, setOpenProfile] = useState(false);
   const {
@@ -184,6 +185,19 @@ const HeaderLayout = (props) => {
                     }}
                   >
                     Đổi mật khẩu
+                  </Button>
+                  <Button
+                    type="default"
+                    className="min-w-full"
+                    style={{
+                      height: "40px",
+                      fontSize: "14px",
+                    }}
+                    onClick={() => {
+                      navigate("/");
+                    }}
+                  >
+                    Giao diện người dùng
                   </Button>
                 </div>
               </Drawer>

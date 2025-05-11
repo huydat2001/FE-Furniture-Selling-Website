@@ -37,7 +37,7 @@ const LoginPage = () => {
     if (res && res.data) {
       notification.success({
         message: "Đăng nhập thành công",
-        description: `Chào mừng ${res.data.fullName}`,
+        description: `Chào mừng ${res.data.username} trở lại!`,
       });
       localStorage.setItem("access_token", res.accessToken);
       setUser(res.data);
