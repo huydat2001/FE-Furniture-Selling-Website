@@ -244,7 +244,7 @@ const OrderTableComponent = (props) => {
           boxShadow: "rgba(0, 0, 0, 0.15) 0px 5px 15px",
         }}
         rowKey={"_id"}
-        className="rounded-t-3xl rounded-b-2xl"
+        className="overflow-scroll rounded-t-3xl rounded-b-2xl"
         columns={columns}
         dataSource={data}
         onChange={onChange}

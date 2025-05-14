@@ -9,7 +9,15 @@ const getAllOrderAPI = (current, pageSize, filter = {}) => {
   if (filter.status) {
     params.append("status", filter.status);
   }
-
+  if (filter.sortBy) {
+    params.append("sortBy", filter.sortBy);
+  }
+  if (filter.order) {
+    params.append("order", filter.order);
+  }
+  if (filter.period) {
+    params.append("period", filter.period);
+  }
   let URL_BACKEND = `/v1/api/order?${params.toString()}`;
   return axios.get(URL_BACKEND);
 };

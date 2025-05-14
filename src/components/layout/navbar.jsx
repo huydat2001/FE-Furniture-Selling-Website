@@ -78,11 +78,11 @@ const Navbar = (props) => {
   const items = [
     {
       icon: <HomeOutlined />,
-      label: "OVERVIEW",
+      label: "Tổng quan",
       key: "overview",
       children: [
         {
-          label: <Link to="/admin">Analytics</Link>,
+          label: <Link to="/admin">Phân tích</Link>,
           key: "analytics",
           icon: <IoAnalytics />,
         },
@@ -95,7 +95,7 @@ const Navbar = (props) => {
     },
     {
       icon: <ControlOutlined />,
-      label: "MANAGEMENT",
+      label: "Quản lý",
       key: "management",
       children: [
         {
