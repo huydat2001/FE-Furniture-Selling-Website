@@ -17,6 +17,7 @@ import { CiCircleInfo } from "react-icons/ci";
 import { MdOutlinePolicy, MdOutlineRateReview } from "react-icons/md";
 import "../../assets/product.css";
 import { useCart } from "../../contexts/cart.context";
+import CommentComponent from "../../components/comment/comment";
 
 const UserProductPage = () => {
   const { name } = useParams();
@@ -86,8 +87,9 @@ const UserProductPage = () => {
         discountedPrice: formattedDiscountedPrice,
         rawDiscountedPrice: discountedPrice, // Giá sau giảm để tính toán
         decreases: productData.decreases,
-        rating: productData.ratings || 0,
+        ratings: productData.ratings || 0,
         reviews: productData.reviews?.length || 0,
+        totalReviews: productData.totalReviews || 0,
         sold: productData.sold || 0,
         stock: productData.stock,
         color: productData.color || [],
@@ -250,12 +252,13 @@ const UserProductPage = () => {
 
           <div className="flex items-center mb-4">
             <Rate
+              allowHalf
               disabled
-              value={product.rating}
-              style={{ fontSize: 16, color: "#fadb14" }}
+              value={product.ratings}
+              style={{ fontSize: 16, colosr: "#fadb14" }}
             />
             <span className="ml-2 text-gray-500">
-              ({product.reviews} đánh giá)
+              ({product.totalReviews} đánh giá)
             </span>
             <span className="ml-4 text-gray-500">Đã bán {product.sold}</span>
           </div>
@@ -489,9 +492,7 @@ const UserProductPage = () => {
             ),
             children: (
               <div className="p-6 bg-white rounded-lg shadow-md">
-                <p className="text-gray-700">
-                  Chưa có đánh giá nào cho sản phẩm này.
-                </p>
+                <CommentComponent product={product} />
               </div>
             ),
           },
