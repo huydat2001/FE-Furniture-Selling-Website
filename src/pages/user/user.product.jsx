@@ -309,7 +309,7 @@ const UserProductPage = () => {
                 return (
                   <button
                     key={i}
-                    className={`inline-block w-5 h-5 rounded-full mr-2 border cursor-pointer hover:scale-150 transition-transform ${
+                    className={`inline-block w-4 h-4 rounded-full mr-2 border cursor-pointer hover:scale-150 transition-transform ${
                       selectedColor === c
                         ? "border-blue-500 scale-150"
                         : "border-gray-300"

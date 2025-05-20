@@ -31,10 +31,10 @@ const CategoryPage = () => {
           className="mb-6"
           items={[
             {
-              title: <Link to="/">Dashboard</Link>,
+              title: <Link to="/">Tổng quan</Link>,
             },
             {
-              title: "Management",
+              title: "Quản lý",
             },
             {
               title: "Category",

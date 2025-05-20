@@ -13,6 +13,11 @@ const getCommentsByProduct = (current, pageSize, productId) => {
   return axios.get(URL_BACKEND);
 };
 const createComment = (data, config) => {
-  return axios.post("/v1/api/comments", data, config);
+  const URL_BACKEND = `/v1/api/comments`;
+  return axios.post(URL_BACKEND, data, config);
 };
-export { getCommentsByProduct, createComment };
+const deleteComment = (productId) => {
+  const URL_BACKEND = `/v1/api/comments/${productId}`;
+  return axios.delete(URL_BACKEND);
+};
+export { getCommentsByProduct, createComment, deleteComment };

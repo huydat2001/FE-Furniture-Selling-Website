@@ -22,7 +22,6 @@ const WriteComment = ({ productId, onCommentAdded }) => {
   const [rating, setRating] = useState(5);
   const [content, setContent] = useState("");
   const desc = ["Tệ", "Kém", "Bình thường", "Tốt", "Tuyệt vời"];
-
   const handleSubmit = async () => {
     try {
       const token = localStorage.getItem("access_token");
@@ -30,6 +29,7 @@ const WriteComment = ({ productId, onCommentAdded }) => {
         { productId, content, rating },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      console.log("res  :>> ", res);
       setIsModalOpen(false);
       setContent("");
       setRating(5);
@@ -178,19 +178,20 @@ const CommentComponent = ({ product }) => {
     total: 0,
     totalPages: 1,
   });
-
-  const memoizedComments = useMemo(() => comments, [comments]);
   const [allComments, setAllComments] = useState([]);
+  const memoizedComments = useMemo(() => comments, [comments]);
+
   useEffect(() => {
     fetchComments();
     fetchAllComments();
   }, [product.id]);
+
   const fetchAllComments = async () => {
     try {
-      const response = await getCommentsByProduct(1, 1000, product.id); // limit lớn
+      const response = await getCommentsByProduct(1, null, product.id); // Lấy tất cả bình luận
       setAllComments(response.data?.result || []);
     } catch (err) {
-      // Có thể bỏ qua lỗi ở đây
+      console.log("Error fetching all comments:", err);
     }
   };
 
@@ -208,7 +209,7 @@ const CommentComponent = ({ product }) => {
         setComments(comments);
         setPagination({
           currentPage: paginationData.current_page || 1,
-          limit: paginationData.limit || 3,
+          limit: paginationData.limit || 10,
           total: paginationData.total || 0,
           totalPages: paginationData.total_pages || 1,
         });
@@ -226,7 +227,9 @@ const CommentComponent = ({ product }) => {
   };
 
   const onCommentAdded = () => {
-    fetchComments(1, pagination.limit);
+    // Cập nhật lại cả danh sách phân trang và danh sách đầy đủ
+    fetchComments(1, pagination.limit); // Tải lại danh sách theo phân trang
+    fetchAllComments(); // Tải lại toàn bộ danh sách để tính ratingDistribution
   };
 
   const calculateRatingDistribution = useCallback((comments) => {
@@ -245,6 +248,9 @@ const CommentComponent = ({ product }) => {
     [allComments]
   );
 
+  // Tính lại totalReviews từ allComments
+  const totalReviews = useMemo(() => allComments.length, [allComments]);
+
   return (
     <div style={{ padding: "20px" }}>
       <h1 className="font-semibold text-xl text-center">
@@ -259,9 +265,11 @@ const CommentComponent = ({ product }) => {
         style={{ marginBottom: "20px" }}
       >
         <div>
-          <p style={{ fontSize: "24px", color: "#000" }}>{product.ratings}/5</p>
-          <Rate disabled value={product.ratings} />
-          <p style={{ color: "#666" }}>{product.totalReviews} đánh giá</p>
+          <p style={{ fontSize: "24px", color: "#000" }}>
+            {product.ratings || 0}/5
+          </p>
+          <Rate disabled value={product.ratings || 0} />
+          <p style={{ color: "#666" }}>{totalReviews} đánh giá</p>
         </div>
         <div>
           {[5, 4, 3, 2, 1].map((star) => (
