@@ -87,14 +87,15 @@ const ContentTKComponent = () => {
             >
               Đơn hàng của tôi
             </Link>
-            {user.role === "admin" && (
-              <Link
-                to="/admin"
-                className="block w-full px-4 py-2 text-blue-500 hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
-              >
-                Giao diện quản trị
-              </Link>
-            )}
+            {user.role === "admin" ||
+              (user.role === "staff" && (
+                <Link
+                  to="/admin"
+                  className="block w-full px-4 py-2 text-blue-500 hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
+                >
+                  Giao diện quản trị
+                </Link>
+              ))}
           </div>
 
           {/* Nút đăng xuất */}

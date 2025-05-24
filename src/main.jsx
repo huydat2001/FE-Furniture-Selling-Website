@@ -22,6 +22,7 @@ import OrderPage from "./pages/admin/order.jsx";
 import HistoryOrderPage from "./pages/user/history.order.jsx";
 import AnalyticPage from "./pages/admin/analytic.jsx";
 import CommentPage from "./pages/admin/comment.jsx";
+import ChattingTest from "./components/chatting/test.chat.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -127,6 +128,10 @@ const router = createBrowserRouter([
       {
         path: "orders",
         element: <HistoryOrderPage />,
+      },
+      {
+        path: "chattings",
+        element: <ChattingTest />,
       },
     ],
   },
