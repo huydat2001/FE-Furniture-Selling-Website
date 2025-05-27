@@ -12,4 +12,13 @@ const getAccountAPI = () => {
   const URL_BACKEND = `/v1/api/auth/account`;
   return axios.get(URL_BACKEND);
 };
-export { loginAPI, getAccountAPI };
+const registerAPI = async (value) => {
+  const URL_BACKEND = `/v1/api/register`;
+  return axios.post(URL_BACKEND, value);
+};
+
+const verifyEmailAPI = async (value) => {
+  const URL_BACKEND = `/v1/api/verify-email`;
+  return axios.post(URL_BACKEND, value);
+};
+export { loginAPI, getAccountAPI, registerAPI, verifyEmailAPI };

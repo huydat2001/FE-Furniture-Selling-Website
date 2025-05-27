@@ -24,6 +24,7 @@ import AnalyticPage from "./pages/admin/analytic.jsx";
 import CommentPage from "./pages/admin/comment.jsx";
 
 import ChatBoxPage from "./pages/admin/chat.jsx";
+import SignUpPage from "./pages/signup.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -148,6 +149,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <SignUpPage />,
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
