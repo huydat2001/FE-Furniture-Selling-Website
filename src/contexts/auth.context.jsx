@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext({
   username: "",
@@ -16,6 +16,7 @@ export const AuthWrapper = (props) => {
     id: "",
   });
   const [isAppLoading, setIsAppLoading] = useState(true);
+
   return (
     <AuthContext.Provider
       value={{ user, setUser, isAppLoading, setIsAppLoading }}
