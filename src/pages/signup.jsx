@@ -190,7 +190,7 @@ const SignUpPage = () => {
                   placeholder="Nhập email của bạn"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  disabled={!!localStorage.getItem("signupEmail")}
+                  // disabled={!!localStorage.getItem("signupEmail")}
                 />
               </Form.Item>
               <Form.Item
@@ -208,7 +208,7 @@ const SignUpPage = () => {
                   placeholder="Nhập tài khoản của bạn"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  disabled={!!localStorage.getItem("signupEmail")}
+                  // disabled={!!localStorage.getItem("signupEmail")}
                 />
               </Form.Item>
               <Form.Item
@@ -216,6 +216,10 @@ const SignUpPage = () => {
                 name="password"
                 rules={[
                   { required: true, message: "Không được để trống mật khẩu!" },
+                  {
+                    min: 6,
+                    message: "Mật khẩu phải có ít nhất 6 kí tự",
+                  },
                 ]}
                 initialValue={password}
               >
@@ -223,7 +227,7 @@ const SignUpPage = () => {
                   placeholder="Nhập mật khẩu của bạn"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={!!localStorage.getItem("signupEmail")}
+                  // disabled={!!localStorage.getItem("signupEmail")}
                 />
               </Form.Item>
               <Form.Item
@@ -231,6 +235,10 @@ const SignUpPage = () => {
                 name="passwordAgain"
                 rules={[
                   { required: true, message: "Không được để trống mật khẩu!" },
+                  {
+                    min: 6,
+                    message: "Mật khẩu phải có ít nhất 6 kí tự",
+                  },
                 ]}
                 initialValue={passwordAgain}
               >
@@ -238,7 +246,7 @@ const SignUpPage = () => {
                   placeholder="Nhập lại mật khẩu của bạn"
                   value={passwordAgain}
                   onChange={(e) => setPasswordAgain(e.target.value)}
-                  disabled={!!localStorage.getItem("signupEmail")}
+                  // disabled={!!localStorage.getItem("signupEmail")}
                 />
               </Form.Item>
               <Form.Item name="remember" valuePropName="checked">
