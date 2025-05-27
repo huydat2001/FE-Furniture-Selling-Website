@@ -133,6 +133,9 @@ const LoginPage = () => {
         <Text style={{ display: "block", textAlign: "center", marginTop: 16 }}>
           Bạn chưa có tài khoản? <a href="/register">Đăng kí ngay</a>
         </Text>
+        <Text style={{ display: "block", textAlign: "center", marginTop: 16 }}>
+          <a href="/forgot-password">Quên mật khẩu</a>
+        </Text>
       </div>
     </div>
   );

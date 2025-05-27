@@ -21,4 +21,21 @@ const verifyEmailAPI = async (value) => {
   const URL_BACKEND = `/v1/api/verify-email`;
   return axios.post(URL_BACKEND, value);
 };
-export { loginAPI, getAccountAPI, registerAPI, verifyEmailAPI };
+
+const forgotPasswordAPI = async (value) => {
+  const URL_BACKEND = `/v1/api/forgot-password`;
+  return axios.post(URL_BACKEND, value);
+};
+
+const resetPasswordAPI = async (value) => {
+  const URL_BACKEND = `/v1/api/reset-password`;
+  return axios.post(URL_BACKEND, value);
+};
+export {
+  loginAPI,
+  getAccountAPI,
+  registerAPI,
+  verifyEmailAPI,
+  forgotPasswordAPI,
+  resetPasswordAPI,
+};

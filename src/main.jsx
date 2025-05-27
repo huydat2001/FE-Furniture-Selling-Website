@@ -25,6 +25,7 @@ import CommentPage from "./pages/admin/comment.jsx";
 
 import ChatBoxPage from "./pages/admin/chat.jsx";
 import SignUpPage from "./pages/signup.jsx";
+import ForgotPasswordPage from "./pages/forgot.password.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -153,6 +154,10 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <SignUpPage />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPasswordPage />,
   },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
