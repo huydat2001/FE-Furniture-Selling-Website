@@ -26,6 +26,7 @@ import CommentPage from "./pages/admin/comment.jsx";
 import ChatBoxPage from "./pages/admin/chat.jsx";
 import SignUpPage from "./pages/signup.jsx";
 import ForgotPasswordPage from "./pages/forgot.password.jsx";
+import ProfilePage from "./pages/user/profile.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -139,6 +140,10 @@ const router = createBrowserRouter([
       {
         path: "orders",
         element: <HistoryOrderPage />,
+      },
+      {
+        path: "profile",
+        element: <ProfilePage />,
       },
     ],
   },

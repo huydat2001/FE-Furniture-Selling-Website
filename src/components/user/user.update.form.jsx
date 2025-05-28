@@ -95,6 +95,7 @@ const UserUpDateFormComponent = (props) => {
     }
   };
   const handleUpdate = async (values) => {
+    console.log("values :>> ", values);
     const res = await updateUserAPI(values);
     if (res.data) {
       notification.success({

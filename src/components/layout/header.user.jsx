@@ -76,7 +76,7 @@ const ContentTKComponent = () => {
           {/* Menu liên kết */}
           <div className="w-full space-y-2">
             <Link
-              to="/user/profile"
+              to="/profile"
               className="block w-full px-4 py-2 text-blue-500 hover:bg-blue-50 hover:text-blue-700 rounded-md transition-colors"
             >
               Trang cá nhân

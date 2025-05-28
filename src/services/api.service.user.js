@@ -22,6 +22,7 @@ const createUserAPI = (value) => {
 };
 const updateUserAPI = (value) => {
   const URL_BACKEND = "/v1/api/user";
+  console.log("value :>> ", value);
   const data = {
     id: value.id,
     password: value.password,
