@@ -25,13 +25,15 @@ const updateUserAPI = (value) => {
   console.log("value :>> ", value);
   const data = {
     id: value.id,
-    password: value.password,
+    password: value.password, // Mật khẩu mới
     fullName: value.fullName,
     role: value.role,
     phone: value.phone,
-    city: value.address?.[0] ?? undefined,
-    state: value.address?.[1] ?? undefined,
-    street: value.address?.[2] ?? undefined,
+    city: value.city ?? undefined,
+    state: value.state ?? undefined,
+    street: value.street ?? undefined,
+    country: value.country ?? undefined,
+    currentPassword: value.currentPassword, // Thêm mật khẩu hiện tại
   };
   return axios.put(URL_BACKEND, data);
 };
@@ -39,4 +41,19 @@ const deleteUserAPI = (id) => {
   const URL_BACKEND = `/v1/api/user/${id}`;
   return axios.delete(URL_BACKEND);
 };
-export { getAllUserAPI, createUserAPI, updateUserAPI, deleteUserAPI };
+const changePasswordAPI = (value) => {
+  const URL_BACKEND = "/v1/api/user/change-password";
+  const data = {
+    id: value.id,
+    currentPassword: value.currentPassword,
+    newPassword: value.newPassword,
+  };
+  return axios.put(URL_BACKEND, data);
+};
+export {
+  getAllUserAPI,
+  createUserAPI,
+  updateUserAPI,
+  deleteUserAPI,
+  changePasswordAPI,
+};

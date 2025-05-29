@@ -168,32 +168,6 @@ const HeaderLayout = (props) => {
                       fontSize: "14px",
                     }}
                     onClick={() => {
-                      message.info("Chức năng đang phát triển!");
-                    }}
-                  >
-                    Cập nhật thông tin
-                  </Button>
-                  <Button
-                    type="default"
-                    className="min-w-full"
-                    style={{
-                      height: "40px",
-                      fontSize: "14px",
-                    }}
-                    onClick={() => {
-                      message.info("Chức năng đang phát triển!");
-                    }}
-                  >
-                    Đổi mật khẩu
-                  </Button>
-                  <Button
-                    type="default"
-                    className="min-w-full"
-                    style={{
-                      height: "40px",
-                      fontSize: "14px",
-                    }}
-                    onClick={() => {
                       navigate("/");
                     }}
                   >
