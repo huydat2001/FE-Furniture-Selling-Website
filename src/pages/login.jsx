@@ -30,7 +30,6 @@ const LoginPage = () => {
       }
     }
   }, [user, navigate]);
-  console.log("user effect :>> ", user);
   const onFinish = async (values) => {
     setLoading(true);
     const res = await loginAPI(values);

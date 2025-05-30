@@ -57,7 +57,6 @@ const ContentTKComponent = () => {
     });
     message.success("Đăng xuất thành công");
   };
-  console.log("user :>> ", user);
   return (
     <div className="w-64 p-4 bg-white rounded-lg shadow-lg">
       {user._id ? (

@@ -29,7 +29,6 @@ const WriteComment = ({ productId, onCommentAdded }) => {
         { productId, content, rating },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("res  :>> ", res);
       setIsModalOpen(false);
       setContent("");
       setRating(5);

@@ -10,16 +10,17 @@ import {
   removeFromCartAPI,
   updateCartAPI,
 } from "../services/api.sevice.cart";
+import { AuthContext } from "./auth.context";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [totalItems, setTotalItems] = useState(0);
-
+  const { user } = useContext(AuthContext);
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [user]);
   const fetchCart = async () => {
     try {
       const res = await getCartAPI();
