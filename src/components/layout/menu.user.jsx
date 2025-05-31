@@ -103,7 +103,7 @@ const MenuUserComponent = () => {
         icon: <IoNewspaperOutline style={fontstyle} />,
       },
       {
-        label: "Giới thiệu",
+        label: <Link to="/infomation">Giới thiệu</Link>,
         key: "info",
         icon: <MdOutlinePermDeviceInformation style={fontstyle} />,
       },

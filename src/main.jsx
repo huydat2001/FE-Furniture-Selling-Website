@@ -29,6 +29,7 @@ import ForgotPasswordPage from "./pages/forgot.password.jsx";
 import ProfilePage from "./pages/user/profile.jsx";
 import ProductListPage from "./pages/user/product.category.jsx";
 import ShowRoomPage from "./pages/user/showroom.jsx";
+import Informaitonpage from "./pages/user/information.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -154,6 +155,10 @@ const router = createBrowserRouter([
       {
         path: "showroom",
         element: <ShowRoomPage />,
+      },
+      {
+        path: "infomation",
+        element: <Informaitonpage />,
       },
     ],
   },
