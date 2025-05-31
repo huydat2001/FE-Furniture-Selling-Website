@@ -32,6 +32,7 @@ import ShowRoomPage from "./pages/user/showroom.jsx";
 import Informaitonpage from "./pages/user/information.jsx";
 import SpecialProduct from "./pages/user/special.product.jsx";
 import AllProductpage from "./pages/user/allproduct.jsx";
+import ExportPage from "./pages/admin/export.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -118,6 +119,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <ChatBoxPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "export",
+        element: (
+          <PrivateRoute>
+            <ExportPage />
           </PrivateRoute>
         ),
       },

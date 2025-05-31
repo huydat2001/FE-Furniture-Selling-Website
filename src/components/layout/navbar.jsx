@@ -10,7 +10,12 @@ import {
 import { BsFillMenuAppFill } from "react-icons/bs";
 import { IoAnalytics, IoChatbubblesOutline } from "react-icons/io5";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaCommentDots, FaProductHunt, FaUser } from "react-icons/fa";
+import {
+  FaCommentDots,
+  FaFileExport,
+  FaProductHunt,
+  FaUser,
+} from "react-icons/fa";
 import { BiSolidCategory, BiSolidDiscount } from "react-icons/bi";
 import { TbBrandBebo } from "react-icons/tb";
 import { MdPayments } from "react-icons/md";
@@ -33,6 +38,7 @@ const Navbar = (props) => {
         "orders",
         "comments",
         "chats",
+        "export",
       ];
 
       const pathSegments = location.pathname.split("/").filter(Boolean);
@@ -63,6 +69,9 @@ const Navbar = (props) => {
           setOpenKeys(["management"]);
         }
         if (currentRoute === "chats") {
+          setOpenKeys(["management"]);
+        }
+        if (currentRoute === "export") {
           setOpenKeys(["management"]);
         }
         if (currentRoute === "apps") {
@@ -142,6 +151,11 @@ const Navbar = (props) => {
           label: <Link to="/admin/chats">Tin nhắn</Link>,
           key: "chats",
           icon: <IoChatbubblesOutline />,
+        },
+        {
+          label: <Link to="/admin/export">Xuất báo cáo</Link>,
+          key: "export",
+          icon: <FaFileExport />,
         },
       ],
     },
