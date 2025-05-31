@@ -93,14 +93,9 @@ const MenuUserComponent = () => {
         children: buildCategoryItems(), // Gắn danh mục động vào đây
       },
       {
-        label: "Sản phẩm nổi bật",
+        label: <Link to="/specialproduct">Sản phẩm nổi bật</Link>,
         key: "hot",
         icon: <MdOutlineWhatshot style={fontstyle} />,
-      },
-      {
-        label: "Tin tức",
-        key: "news",
-        icon: <IoNewspaperOutline style={fontstyle} />,
       },
       {
         label: <Link to="/infomation">Giới thiệu</Link>,

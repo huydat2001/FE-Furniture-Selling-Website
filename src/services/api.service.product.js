@@ -38,6 +38,7 @@ const getProductByQuyeryAPI = (current, pageSize, filters = {}) => {
     name,
     period,
     category,
+    isFeatured,
   } = filters;
   if (search) URL_BACKEND += `&search=${encodeURIComponent(search)}`;
   if (minPrice) URL_BACKEND += `&minPrice=${minPrice}`;
@@ -47,7 +48,9 @@ const getProductByQuyeryAPI = (current, pageSize, filters = {}) => {
   if (sortBy && order) URL_BACKEND += `&sortBy=${sortBy}&order=${order}`;
   if (name) URL_BACKEND += `&name=${name}`;
   if (period) URL_BACKEND += `&period=${period}`;
+
   if (category) URL_BACKEND += `&category=${category}`;
+  if (isFeatured !== undefined) URL_BACKEND += `&isFeatured=${isFeatured}`;
   return axios.get(URL_BACKEND);
 };
 export {
