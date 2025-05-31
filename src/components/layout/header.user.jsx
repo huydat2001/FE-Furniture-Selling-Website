@@ -5,20 +5,21 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Badge, Button, Input, message, Popover } from "antd";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../contexts/cart.context";
 import CartComponent from "../product/user/cart.user";
 import { jwtDecode } from "jwt-decode";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { AuthContext } from "../../contexts/auth.context";
 import { getAccountAPI } from "../../services/login";
+import { getProductByQuyeryAPI } from "../../services/api.service.product";
 
 const { Search } = Input;
+
 const ContentTKComponent = () => {
   const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Lấy thông tin người dùng khi component mount
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -33,18 +34,16 @@ const ContentTKComponent = () => {
     fetchUserInfo();
   }, [setUser]);
 
-  // Lấy userId từ token (nếu cần)
   const token = localStorage.getItem("access_token");
   let userId = null;
   try {
     const decoded = jwtDecode(token);
-    userId = decoded.id || decoded._id || decoded.sub; // Hỗ trợ các trường khác nhau
+    userId = decoded.id || decoded._id || decoded.sub;
   } catch (error) {
     console.log("Token decode error:", error);
     userId = null;
   }
 
-  // Xử lý đăng xuất
   const logout = () => {
     localStorage.removeItem("access_token");
     setUser({
@@ -57,11 +56,11 @@ const ContentTKComponent = () => {
     });
     message.success("Đăng xuất thành công");
   };
+
   return (
     <div className="w-64 p-4 bg-white rounded-lg shadow-lg">
       {user._id ? (
         <div className="flex flex-col items-center space-y-4">
-          {/* Avatar và tên người dùng */}
           <Avatar
             size={64}
             icon={<UserOutlined />}
@@ -71,8 +70,6 @@ const ContentTKComponent = () => {
           <h3 className="text-lg font-semibold text-gray-800">
             Xin chào, {user.fullName || user.username}
           </h3>
-
-          {/* Menu liên kết */}
           <div className="w-full space-y-2">
             <Link
               to="/profile"
@@ -95,8 +92,6 @@ const ContentTKComponent = () => {
               </Link>
             )}
           </div>
-
-          {/* Nút đăng xuất */}
           <Button
             type="text"
             icon={<LogoutOutlined />}
@@ -132,55 +127,163 @@ const ContentTKComponent = () => {
     </div>
   );
 };
+
 const HeaderUser = () => {
   const { totalItems } = useCart();
-  const onSearch = (value) => console.log("Search:", value);
+  const navigate = useNavigate();
+  const [searchResults, setSearchResults] = useState([]); // State để lưu kết quả tìm kiếm
+  const [searchValue, setSearchValue] = useState(""); // State để lưu giá trị tìm kiếm
+  const searchContainerRef = useRef(null); // Tham chiếu đến ô tìm kiếm
+  const searchDropdownRef = useRef(null); // Tham chiếu đến danh sách tìm kiếm
+
+  // Hàm xử lý tìm kiếm
+  const onSearch = async (value) => {
+    if (!value) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      const filters = { search: value, status: "active" };
+      const res = await getProductByQuyeryAPI(1, 5, filters); // Lấy 5 sản phẩm đầu tiên
+      if (res.data?.result) {
+        setSearchResults(res.data.result);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Error searching products:", error);
+      setSearchResults([]);
+    }
+  };
+
+  // Xử lý khi người dùng nhập ký tự
+  const onChangeSearch = (e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    onSearch(value); // Gọi hàm tìm kiếm mỗi khi người dùng nhập ký tự
+  };
+
+  // Xử lý click ra ngoài để ẩn danh sách
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target) &&
+        searchDropdownRef.current &&
+        !searchDropdownRef.current.contains(event.target)
+      ) {
+        setSearchResults([]);
+        setSearchValue("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
-    <div className="flex justify-between px-6 py-3 max-w-[1400px] mx-auto">
-      {/* Logo */}
-      <Link to="/">
-        <img src="/MUJI_logo.svg.png" alt="MUJI Logo" className="h-10 w-auto" />
-      </Link>
+    <div className="flex flex-col px-6 py-3 max-w-[1400px] mx-auto">
+      <div
+        className="flex justify-between items-center"
+        ref={searchContainerRef}
+      >
+        {/* Logo */}
+        <Link to="/">
+          <img
+            src="/MUJI_logo.svg.png"
+            alt="MUJI Logo"
+            className="h-10 w-auto"
+          />
+        </Link>
 
-      {/* Thanh tìm kiếm */}
-      <div className="flex-1 mx-10">
-        <Search
-          placeholder="Tìm kiếm sản phẩm..."
-          onSearch={onSearch}
-          enterButton={<Button type="primary" icon={<SearchOutlined />} />}
-          size="large"
-          style={{ maxWidth: "600px" }}
-        />
-      </div>
-
-      {/* Nút hành động */}
-      <div className="flex space-x-4">
-        <Popover placement="bottom" content={ContentTKComponent}>
-          <Button
-            icon={<UserOutlined />}
+        {/* Thanh tìm kiếm */}
+        <div className="flex-1 mx-10 relative">
+          <Search
+            placeholder="Tìm kiếm sản phẩm..."
+            onSearch={onSearch}
+            onChange={onChangeSearch} // Xử lý khi người dùng nhập ký tự
+            value={searchValue}
+            enterButton={<Button type="primary" icon={<SearchOutlined />} />}
             size="large"
-            style={{ borderRadius: "6px" }}
-          >
-            Tài khoản
-          </Button>
-        </Popover>
+            style={{ maxWidth: "600px" }}
+          />
 
-        <Popover
-          placement="bottomRight"
-          title="Giỏ hàng"
-          content={<CartComponent />}
-        >
-          <Badge count={totalItems}>
+          {/* Hiển thị danh sách sản phẩm tìm kiếm */}
+          {searchValue && searchResults.length > 0 && (
+            <div
+              ref={searchDropdownRef}
+              className="absolute top-full left-0 bg-white border rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto"
+              style={{ top: searchContainerRef.current?.clientHeight || 56 }}
+            >
+              {searchResults.map((product) => (
+                <Link
+                  key={product._id}
+                  to={`/product/${product.name}`}
+                  className="block p-4 hover:bg-gray-100 border-b last:border-b-0"
+                  onClick={() => {
+                    setSearchValue(""); // Xóa ô tìm kiếm khi nhấp vào sản phẩm
+                    setSearchResults([]); // Ẩn danh sách tìm kiếm
+                  }}
+                >
+                  <div className="flex items-center space-x-4">
+                    <img
+                      src={
+                        `${import.meta.env.VITE_BACKEND_URL}/images/product/${
+                          product.images[0].name
+                        }` ||
+                        `${
+                          import.meta.env.VITE_BACKEND_URL
+                        }/images/product/default.png`
+                      }
+                      alt={product.name}
+                      className="w-12 h-12 object-cover rounded"
+                    />
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-800">
+                        {product.name}
+                      </h4>
+                      <p className="text-sm text-gray-500">
+                        {product.price.toLocaleString()}đ
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Nút hành động */}
+        <div className="flex space-x-4">
+          <Popover placement="bottom" content={<ContentTKComponent />}>
             <Button
-              icon={<ShoppingCartOutlined />}
+              icon={<UserOutlined />}
               size="large"
               style={{ borderRadius: "6px" }}
             >
-              Giỏ hàng
+              Tài khoản
             </Button>
-          </Badge>
-        </Popover>
+          </Popover>
+
+          <Popover
+            placement="bottomRight"
+            title="Giỏ hàng"
+            content={<CartComponent />}
+          >
+            <Badge count={totalItems}>
+              <Button
+                icon={<ShoppingCartOutlined />}
+                size="large"
+                style={{ borderRadius: "6px" }}
+              >
+                Giỏ hàng
+              </Button>
+            </Badge>
+          </Popover>
+        </div>
       </div>
     </div>
   );

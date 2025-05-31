@@ -8,7 +8,7 @@ import {
   MdOutlineWhatshot,
 } from "react-icons/md";
 import { getAllCategoryAPI } from "../../services/api.service.category";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const fontstyle = {
   fontSize: "18px",
@@ -17,7 +17,7 @@ const fontstyle = {
 const MenuUserComponent = () => {
   const [current, setCurrent] = useState("home");
   const [categorys, setCategorys] = useState([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     getCategory();
   }, []);
@@ -38,14 +38,41 @@ const MenuUserComponent = () => {
         const children = listCategory
           .filter((cat) => cat.parent && cat.parent._id === parent._id)
           .map((child) => ({
-            label: child.name,
+            label: (
+              <Link
+                to={`/products/category/${child._id}`}
+                onClick={(e) => {
+                  e.preventDefault(); // Ngăn chặn hành vi mặc định của Link
+
+                  navigate(`/products/category/${child._id}`);
+
+                  setCurrent(child._id);
+                }}
+              >
+                {child.name}
+              </Link>
+            ),
+
             key: child._id,
           }));
 
         return {
-          label: parent.name,
+          label: (
+            <Link
+              to={`/products/category/${parent._id}`}
+              onClick={(e) => {
+                e.preventDefault();
+
+                navigate(`/products/category/${parent._id}`);
+
+                setCurrent(parent._id);
+              }}
+            >
+              {parent.name}
+            </Link>
+          ),
           key: parent._id,
-          children: children.length > 0 ? children : undefined, // Nếu không có con thì không thêm thuộc tính children
+          children: children.length > 0 ? children : undefined,
         };
       });
 
@@ -93,6 +120,9 @@ const MenuUserComponent = () => {
   const onClick = (e) => {
     console.log("Menu Clicked:", e.key);
     setCurrent(e.key);
+    if (e.key.startsWith("products")) {
+      navigate(`/products/category/${e.key}`);
+    }
   };
 
   return (

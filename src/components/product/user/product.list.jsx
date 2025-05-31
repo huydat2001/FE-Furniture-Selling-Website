@@ -24,10 +24,10 @@ const ProductListComponent = (props) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { filter, badgeText, badgeColor } = props;
+
   useEffect(() => {
     fetchProducts();
   }, [filter]);
-
   const fetchProducts = async () => {
     try {
       const res = await getProductByQuyeryAPI(1, 12, filter);
