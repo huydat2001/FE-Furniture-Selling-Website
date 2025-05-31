@@ -108,7 +108,7 @@ const MenuUserComponent = () => {
         icon: <MdOutlinePermDeviceInformation style={fontstyle} />,
       },
       {
-        label: "Showroom",
+        label: <Link to="/showroom">Show room</Link>,
         key: "showroom",
         icon: <GiPositionMarker style={fontstyle} />,
       },

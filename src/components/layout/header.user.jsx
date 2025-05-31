@@ -187,7 +187,7 @@ const HeaderUser = () => {
   return (
     <div className="flex flex-col px-6 py-3 max-w-[1400px] mx-auto">
       <div
-        className="flex justify-between items-center"
+        className="flex justify-between items-center "
         ref={searchContainerRef}
       >
         {/* Logo */}
@@ -195,7 +195,7 @@ const HeaderUser = () => {
           <img
             src="/MUJI_logo.svg.png"
             alt="MUJI Logo"
-            className="h-10 w-auto"
+            className="h-10 w-auto mb-4"
           />
         </Link>
 
@@ -257,7 +257,7 @@ const HeaderUser = () => {
         </div>
 
         {/* Nút hành động */}
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 mb-4">
           <Popover placement="bottom" content={<ContentTKComponent />}>
             <Button
               icon={<UserOutlined />}
