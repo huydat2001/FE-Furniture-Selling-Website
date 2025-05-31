@@ -31,6 +31,7 @@ import ProductListPage from "./pages/user/product.category.jsx";
 import ShowRoomPage from "./pages/user/showroom.jsx";
 import Informaitonpage from "./pages/user/information.jsx";
 import SpecialProduct from "./pages/user/special.product.jsx";
+import AllProductpage from "./pages/user/allproduct.jsx";
 const router = createBrowserRouter([
   {
     path: "/admin",
@@ -164,6 +165,10 @@ const router = createBrowserRouter([
       {
         path: "specialproduct",
         element: <SpecialProduct />,
+      },
+      {
+        path: "allproducts",
+        element: <AllProductpage />,
       },
     ],
   },

@@ -9,6 +9,7 @@ import {
 } from "react-icons/md";
 import { getAllCategoryAPI } from "../../services/api.service.category";
 import { Link, useNavigate } from "react-router-dom";
+import { PiShippingContainerDuotone } from "react-icons/pi";
 
 const fontstyle = {
   fontSize: "18px",
@@ -91,6 +92,11 @@ const MenuUserComponent = () => {
         key: "products",
         icon: <AppstoreOutlined style={fontstyle} />,
         children: buildCategoryItems(), // Gắn danh mục động vào đây
+      },
+      {
+        label: <Link to="/allproducts">Tất cả sản phẩm</Link>,
+        key: "allproducts",
+        icon: <PiShippingContainerDuotone style={fontstyle} />,
       },
       {
         label: <Link to="/specialproduct">Sản phẩm nổi bật</Link>,
