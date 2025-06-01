@@ -20,4 +20,13 @@ const deleteComment = (productId) => {
   const URL_BACKEND = `/v1/api/comments/${productId}`;
   return axios.delete(URL_BACKEND);
 };
-export { getCommentsByProduct, createComment, deleteComment };
+const getAllRatingsDistribution = () => {
+  const URL_BACKEND = `/v1/api/comments/ratings-distribution`;
+  return axios.get(URL_BACKEND);
+};
+export {
+  getCommentsByProduct,
+  createComment,
+  deleteComment,
+  getAllRatingsDistribution,
+};
