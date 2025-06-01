@@ -24,8 +24,9 @@ export const CartProvider = ({ children }) => {
   const fetchCart = async () => {
     try {
       const res = await getCartAPI();
+      console.log("res :>> ", res);
       if (!res.data.statusCode) {
-        throw new Error(res.message || "Lỗi khi lấy giỏ hàng");
+        throw new Error(res.message || "Không tìm thấy giỏ hàng");
       }
       const cartData = res.data.result || {};
       setCart(cartData.items || []);
@@ -40,7 +41,7 @@ export const CartProvider = ({ children }) => {
         message.error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại");
         window.location.href = "/login";
       } else {
-        message.error(error.message || "Lỗi khi lấy giỏ hàng");
+        message.error("Không tìm thấy giỏ hàng");
       }
     }
   };

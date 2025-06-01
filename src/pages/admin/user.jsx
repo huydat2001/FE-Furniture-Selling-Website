@@ -24,6 +24,8 @@ const UserPage = () => {
       setDataUser(res.data.result);
       setTotal(res.data.pagination.total_users);
       setLoading(false);
+    } else {
+      setLoading(true);
     }
   };
 
@@ -40,7 +42,7 @@ const UserPage = () => {
             title: "Quản lý",
           },
           {
-            title: "Users",
+            title: "Người dùng",
           },
         ]}
       />

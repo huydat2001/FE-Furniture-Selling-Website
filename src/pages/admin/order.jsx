@@ -36,7 +36,7 @@ const OrderPage = () => {
               title: "Quản lý",
             },
             {
-              title: "Order",
+              title: "Đơn hàng",
             },
           ]}
         />

@@ -111,7 +111,11 @@ const AllProductpage = () => {
         <Button onClick={handleResetFilter}>Hiển thị tất cả</Button>
       </Space>
 
-      <ProductListComponent filter={filter} />
+      <ProductListComponent
+        filter={filter}
+        pageSize={12}
+        enablePagination={true}
+      />
     </div>
   );
 };

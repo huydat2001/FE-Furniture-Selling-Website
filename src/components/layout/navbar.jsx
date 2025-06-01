@@ -29,7 +29,7 @@ const Navbar = (props) => {
     if (location && location.pathname) {
       const allRoutes = [
         "users",
-        "apps",
+        // "apps",
         "categorys",
         "analytics",
         "discounts",
@@ -74,9 +74,9 @@ const Navbar = (props) => {
         if (currentRoute === "export") {
           setOpenKeys(["management"]);
         }
-        if (currentRoute === "apps") {
-          setOpenKeys(["overview"]);
-        }
+        // if (currentRoute === "apps") {
+        //   setOpenKeys(["overview"]);
+        // }
       } else {
         // Nếu không khớp với route nào (ví dụ: /admin hoặc /admin/), mặc định là analytics
         setCurrent("analytics");
@@ -100,11 +100,11 @@ const Navbar = (props) => {
           key: "analytics",
           icon: <IoAnalytics />,
         },
-        {
-          label: <Link to="/admin/apps">App</Link>,
-          key: "apps",
-          icon: <BsFillMenuAppFill />,
-        },
+        // {
+        //   label: <Link to="/admin/apps">App</Link>,
+        //   key: "apps",
+        //   icon: <BsFillMenuAppFill />,
+        // },
       ],
     },
     {

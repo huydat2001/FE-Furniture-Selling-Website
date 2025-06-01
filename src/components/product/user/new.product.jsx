@@ -6,7 +6,13 @@ const NewProductComponent = () => {
   };
 
   return (
-    <ProductListComponent filter={filter} badgeText="Mới" badgeColor="green" />
+    <ProductListComponent
+      filter={filter}
+      badgeText="Mới"
+      badgeColor="green"
+      pageSize={12} // Cố định 12 sản phẩm
+      enablePagination={false}
+    />
   );
 };
 export default NewProductComponent;

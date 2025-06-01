@@ -142,7 +142,7 @@ const BrandPage = () => {
               title: "Quản lý",
             },
             {
-              title: "Brand",
+              title: "Nhãn hàng",
             },
           ]}
         />

@@ -37,7 +37,7 @@ const CategoryPage = () => {
               title: "Quản lý",
             },
             {
-              title: "Category",
+              title: "Danh mục",
             },
           ]}
         />

@@ -55,7 +55,7 @@ const DiscountPage = () => {
               title: "Quản lý",
             },
             {
-              title: "Discount",
+              title: "Phiếu giảm giá",
             },
           ]}
         />

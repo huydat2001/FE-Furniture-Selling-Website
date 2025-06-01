@@ -10,6 +10,7 @@ import {
   Row,
   Tag,
   Tooltip,
+  Pagination,
 } from "antd";
 import Meta from "antd/es/card/Meta";
 import { getProductByQuyeryAPI } from "../../../services/api.service.product";
@@ -17,72 +18,93 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FastDetailCompont from "./fast.detail";
 import { useCart } from "../../../contexts/cart.context";
+
 const ProductListComponent = (props) => {
+  const {
+    filter,
+    badgeText,
+    badgeColor,
+    pageSize = 12,
+    enablePagination = true, // Thêm prop enablePagination, mặc định là true
+  } = props;
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
+  const [current, setCurrent] = useState(1);
+  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const { filter, badgeText, badgeColor } = props;
 
   useEffect(() => {
     fetchProducts();
-  }, [filter]);
+  }, [filter, current]);
+
   const fetchProducts = async () => {
     try {
-      const res = await getProductByQuyeryAPI(1, 12, filter);
-      const listProduct = res.data.result;
-      const formattedProducts = listProduct.map((product) => {
-        const originalPrice = product.price;
-        const originalDiscountedPrice =
-          product.price - product.price * (product.decreases / 100 || 0);
-        const price = product.price.toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        });
+      // Nếu không cho phép phân trang, chỉ lấy pageSize sản phẩm đầu tiên
+      const res = await getProductByQuyeryAPI(
+        enablePagination ? current : 1, // Nếu không cho phép phân trang, luôn lấy trang 1
+        pageSize,
+        filter
+      );
+      if (res.data) {
+        const listProduct = res.data.result;
+        const formattedProducts = listProduct.map((product) => {
+          const originalPrice = product.price;
+          const originalDiscountedPrice =
+            product.price - product.price * (product.decreases / 100 || 0);
+          const price = product.price.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          });
 
-        const discountedPrice = (
-          product.price -
-          product.price * (product.decreases / 100 || 0)
-        ).toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        });
-        const discount = product.decreases
-          ? `-${Math.round(product.decreases)}%`
-          : null;
+          const discountedPrice = (
+            product.price -
+            product.price * (product.decreases / 100 || 0)
+          ).toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          });
+          const discount = product.decreases
+            ? `-${Math.round(product.decreases)}%`
+            : null;
 
-        const image =
-          product.images?.length > 0
-            ? `${import.meta.env.VITE_BACKEND_URL}/images/product/${
-                product.images[0].name
-              }`
-            : `${import.meta.env.VITE_BACKEND_URL}/images/default/default.jpg`;
-        const imageHover =
-          product.images?.length > 1
-            ? `${import.meta.env.VITE_BACKEND_URL}/images/product/${
-                product.images[1].name
-              }`
-            : image;
-        return {
-          id: product._id,
-          name: product.name,
-          price,
-          originalPrice,
-          stock: product.stock,
-          discountedPrice,
-          originalDiscountedPrice,
-          discount,
-          decreases: product.decreases,
-          rating: product.ratings || 0,
-          totalReviews: product.totalReviews || 0,
-          sold: product.sold || 0,
-          color: product.color || [],
-          image,
-          imageHover,
-        };
-      });
-      setProducts(formattedProducts);
+          const image =
+            product.images?.length > 0
+              ? `${import.meta.env.VITE_BACKEND_URL}/images/product/${
+                  product.images[0].name
+                }`
+              : `${
+                  import.meta.env.VITE_BACKEND_URL
+                }/images/default/default.jpg`;
+          const imageHover =
+            product.images?.length > 1
+              ? `${import.meta.env.VITE_BACKEND_URL}/images/product/${
+                  product.images[1].name
+                }`
+              : image;
+          return {
+            id: product._id,
+            name: product.name,
+            price,
+            originalPrice,
+            stock: product.stock,
+            discountedPrice,
+            originalDiscountedPrice,
+            discount,
+            decreases: product.decreases,
+            rating: product.ratings || 0,
+            totalReviews: product.totalReviews || 0,
+            sold: product.sold || 0,
+            color: product.color || [],
+            image,
+            imageHover,
+          };
+        });
+        setProducts(formattedProducts);
+        setTotal(res.data.pagination?.total || 0);
+      }
     } catch (error) {
       console.error("Lỗi lấy sản phẩm", error);
       notification.error({
@@ -91,9 +113,11 @@ const ProductListComponent = (props) => {
       });
     }
   };
+
   const handleViewDetail = (productId) => {
     navigate(`/product/${productId}`);
   };
+
   const handleAddToCart = (product) => {
     if (product.stock === 0) {
       notification.error({
@@ -108,6 +132,7 @@ const ProductListComponent = (props) => {
       color: product.color,
     });
   };
+
   return (
     <>
       <Row gutter={[16, 16]}>
@@ -118,7 +143,7 @@ const ProductListComponent = (props) => {
                 <Card
                   hoverable
                   className="relative product-card"
-                  style={{ width: "100%", cursor: "pointer" }} // Thêm cursor pointer
+                  style={{ width: "100%", cursor: "pointer" }}
                   onClick={() => handleViewDetail(product.name)}
                   cover={
                     <div className="relative image-container">
@@ -246,6 +271,27 @@ const ProductListComponent = (props) => {
           </Col>
         ))}
       </Row>
+
+      {enablePagination && ( // Chỉ hiển thị phân trang nếu enablePagination là true
+        <div style={{ textAlign: "center", marginTop: 16 }}>
+          <Row justify="center">
+            <Col>
+              <Pagination
+                current={current}
+                pageSize={pageSize}
+                total={total}
+                onChange={(page) => setCurrent(page)}
+                showSizeChanger={false}
+                showQuickJumper
+                showTotal={(total, range) =>
+                  `${range[0]}-${range[1]} trong ${total} sản phẩm`
+                }
+              />
+            </Col>
+          </Row>
+        </div>
+      )}
+
       <FastDetailCompont
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
